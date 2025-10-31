@@ -15,7 +15,7 @@ A full-stack MERN application (Doormato food ordering, Scootigo scooter booking,
 - Legacy C code (`C_Program/`) — original implementation and menus (kept for reference).
 
 <p align="center">
-	<img src="https://raw.githubusercontent.com/guru-bharadwaj20/PES_Buddy/Preview.png" alt="PES Buddy preview" style="max-width:100%;border-radius:8px;box-shadow:0 8px 24px rgba(11,61,145,0.12)" />
+	<img src="https://github.com/guru-bharadwaj20/PES_Buddy/blob/main/Preview.png" alt="PES Buddy preview" style="max-width:100%;border-radius:8px;box-shadow:0 8px 24px rgba(11,61,145,0.12)" />
 </p>
 
 🔵 Key features
