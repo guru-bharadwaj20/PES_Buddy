@@ -1,0 +1,16 @@
+# Dependencies (ignores all node_modules folders everywhere)
+node_modules/
+
+# Secrets (ignores all .env files everywhere)
+**/.env
+
+# Build outputs (ignores all dist folders everywhere)
+dist/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS files
+.DS_Store

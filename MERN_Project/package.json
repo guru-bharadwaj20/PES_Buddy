@@ -1,0 +1,20 @@
+{
+	"name": "pes-buddy",
+	"version": "1.0.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"start": "node server/server.js",
+		"server": "npm --prefix server run dev",
+		"client": "npm --prefix client run dev",
+		"install-all": "npm install && npm --prefix server install && npm --prefix client install",
+		"seed": "node seeder.js --import",
+		"seed:delete": "node seeder.js --delete"
+	},
+	"engines": {
+		"node": ">=18"
+	},
+	"dependencies": {
+		"dotenv": "^17.2.3"
+	}
+}
