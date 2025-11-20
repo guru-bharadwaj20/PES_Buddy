@@ -14,3 +14,7 @@ yarn-error.log*
 
 # OS files
 .DS_Store
+
+# Old folder structure (deprecated)
+MERN_Project/server/
+MERN_Project/client/

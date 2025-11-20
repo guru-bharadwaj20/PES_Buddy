@@ -1,28 +1,12 @@
 import dotenv from 'dotenv';
-import { connectDB } from './server/config/db.js';
-import User from './server/models/User.js';
-import Canteen from './server/models/Canteen.js';
-import MenuItem from './server/models/MenuItem.js';
-import Scooter from './server/models/Scooter.js';
+import { connectDB } from './backend/config/db.js';
+import User from './backend/models/User.js';
+import Canteen from './backend/models/Canteen.js';
+import MenuItem from './backend/models/MenuItem.js';
+import Scooter from './backend/models/Scooter.js';
+import { canteens, menuItems, scooters, users } from './backend/utils/seedData.js';
 
 dotenv.config();
-
-const sampleCanteens = [
-	{ name: 'Central Canteen', description: 'Tasty meals near the main block' },
-	{ name: 'Girls Canteen', description: 'Quick bites and beverages' }
-];
-
-const sampleMenu = [
-	{ name: 'Masala Dosa', price: 50 },
-	{ name: 'Idli (2)', price: 20 },
-	{ name: 'Coffee', price: 15 },
-	{ name: 'Burger', price: 60 }
-];
-
-const sampleScooters = [
-	{ scooterId: 'SCOOT-101', driverName: 'Ravi', farePerKm: 12, available: true },
-	{ scooterId: 'SCOOT-102', driverName: 'Priya', farePerKm: 10, available: true }
-];
 
 const importData = async () => {
 	try {
@@ -34,25 +18,50 @@ const importData = async () => {
 		await User.deleteMany();
 
 		// Insert canteens then their menu
-		const createdCanteens = await Canteen.insertMany(sampleCanteens);
+		const createdCanteens = await Canteen.insertMany(canteens);
 		const menuToInsert = [];
+		
 		for (const c of createdCanteens) {
-			for (const m of sampleMenu) {
-				menuToInsert.push({ ...m, canteen: c._id, description: `${m.name} from ${c.name}` });
+			// Match canteen name with menu items (SKM, GJBC, BEBlock, Hornbill)
+			let canteenKey = '';
+			if (c.name.includes('SKM')) canteenKey = 'SKM';
+			else if (c.name.includes('GJBC')) canteenKey = 'GJBC';
+			else if (c.name.includes('BE Block')) canteenKey = 'BEBlock';
+			else if (c.name.includes('Hornbill')) canteenKey = 'Hornbill';
+			
+			const canteenMenu = menuItems[canteenKey] || [];
+			for (const m of canteenMenu) {
+				menuToInsert.push({ 
+					name: m.name, 
+					price: m.price, 
+					category: m.category,
+					canteen: c._id, 
+					description: m.description 
+				});
 			}
 		}
 		await MenuItem.insertMany(menuToInsert);
 
-		// scooters
-		await Scooter.insertMany(sampleScooters);
+		// Insert scooters with proper schema mapping
+		const scootersToInsert = scooters.map((s, idx) => ({
+			scooterId: `SCOOT-${101 + idx}`,
+			driverName: s.driverName,
+			farePerKm: s.fare,
+			available: s.available,
+			vehicleNumber: s.vehicleNumber,
+			route: s.route
+		}));
+		await Scooter.insertMany(scootersToInsert);
 
-		// demo user
-		await User.create({ name: 'Demo User', srn: '01ABC', email: 'demo@pes.edu', password: 'password' });
+		// Insert demo user
+		for (const u of users) {
+			await User.create(u);
+		}
 
-		console.log('Data Imported');
+		console.log('✅ Data Imported Successfully');
 		process.exit();
 	} catch (err) {
-		console.error('Error importing data:', err);
+		console.error('❌ Error importing data:', err);
 		process.exit(1);
 	}
 };

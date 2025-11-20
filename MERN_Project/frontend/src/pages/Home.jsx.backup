@@ -1,0 +1,79 @@
+import React from 'react';
+
+const Home = () => {
+	return (
+		<main className="container">
+			<div className="hero" style={{ textAlign: 'center', padding: '3rem 0' }}>
+				<h1 style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--dark-blue)', marginBottom: '1rem' }}>
+					Welcome to PES Buddy 🎓
+				</h1>
+				<p className="lead" style={{ fontSize: '1.2rem', maxWidth: '700px', margin: '0 auto 2rem' }}>
+					Your all-in-one campus companion for food ordering, scooter booking, and expense tracking at PES University.
+				</p>
+			</div>
+
+			<div className="row">
+				<div className="col">
+					<div className="card">
+						<h3>🍔 PES Doormato</h3>
+						<p>Order delicious food from multiple campus canteens:</p>
+						<ul style={{ marginTop: '0.5rem' }}>
+							<li>SKM Canteen</li>
+							<li>GJBC Canteen</li>
+							<li>BE Block 13th Floor Canteen</li>
+							<li>Hornbill Canteen</li>
+						</ul>
+					</div>
+				</div>
+
+				<div className="col">
+					<div className="card">
+						<h3>🛵 PES Scootigo</h3>
+						<p>Book scooters for convenient campus travel:</p>
+						<ul style={{ marginTop: '0.5rem' }}>
+							<li>GJBC ↔ OAT</li>
+							<li>SKM ↔ BE Block</li>
+							<li>MRD Block ↔ F Block</li>
+						</ul>
+					</div>
+				</div>
+
+				<div className="col">
+					<div className="card">
+						<h3>💰 Expense Tracker</h3>
+						<p>Track your weekly expenses by category:</p>
+						<ul style={{ marginTop: '0.5rem' }}>
+							<li>Food</li>
+							<li>Travel</li>
+							<li>Study Materials</li>
+							<li>Miscellaneous</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+
+			<div className="card mt-2" style={{ backgroundColor: '#f0f9ff', border: '2px solid var(--light-blue)' }}>
+				<h3>Getting Started</h3>
+				<p>To access all features, please <strong>Register</strong> or <strong>Login</strong> using the buttons in the header.</p>
+				<p style={{ marginTop: '0.5rem' }}>Your SRN serves as your unique identifier for all transactions and bookings.</p>
+			</div>
+
+			<div className="row mt-2">
+				<div className="col">
+					<div className="card">
+						<h3>Why PES Buddy?</h3>
+						<ul style={{ marginTop: '0.5rem' }}>
+							<li>✅ Real-time updates and notifications</li>
+							<li>✅ Multiple canteen support</li>
+							<li>✅ Easy scooter booking system</li>
+							<li>✅ Smart expense management with weekly limits</li>
+							<li>✅ Secure authentication</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</main>
+	);
+};
+
+export default Home;

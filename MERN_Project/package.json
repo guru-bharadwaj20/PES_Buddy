@@ -4,17 +4,21 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"start": "node server/server.js",
-		"server": "npm --prefix server run dev",
-		"client": "npm --prefix client run dev",
-		"install-all": "npm install && npm --prefix server install && npm --prefix client install",
+		"start": "node backend/server.js",
+		"server": "npm --prefix backend run dev",
+		"client": "npm --prefix frontend run dev",
+		"install-all": "npm install && npm --prefix backend install && npm --prefix frontend install",
 		"seed": "node seeder.js --import",
-		"seed:delete": "node seeder.js --delete"
+		"seed:delete": "node seeder.js --delete",
+		"dev": "concurrently \"npm run server\" \"npm run client\""
 	},
 	"engines": {
 		"node": ">=18"
 	},
 	"dependencies": {
 		"dotenv": "^17.2.3"
+	},
+	"devDependencies": {
+		"concurrently": "^8.2.2"
 	}
 }
