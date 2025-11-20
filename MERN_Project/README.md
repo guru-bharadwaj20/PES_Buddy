@@ -1,225 +1,35 @@
-# PES Buddy - MERN Stack Application
+# 🚀 PES Buddy – MERN Stack Application
 
-## Overview
-PES Buddy is a full-stack MERN (MongoDB, Express, React, Node.js) application designed for college students to manage food orders, scooter bookings, and expense tracking.
+## 📘 Overview
+Campus companion: order food (Doormato), book scooters (Scootigo), track weekly spending, and monitor operations via an Admin Portal. Built with the MERN stack + Socket.IO for real‑time updates.
 
-## Project Structure
+## ⚙️ Stack
+Backend: Node.js, Express, MongoDB, Mongoose, Socket.IO, JWT  
+Frontend: React 18, Vite, Tailwind, React Router, Axios, Context API  
+Dev: Nodemon, Concurrent scripts, Seeder
 
-```
-MERN_Project/
-├── package.json                  # Root package.json with dev scripts
-├── seeder.js                     # Database seeder
-├── server.js                     # Server entry point (delegates to backend/)
-├── README.md                     # This file
-│
-├── backend/                      # Backend Server
-│   ├── .env                      # Backend environment variables
-│   ├── package.json              # Backend dependencies
-│   ├── server.js                 # Main server file
-│   ├── config/
-│   │   └── db.js                 # MongoDB connection
-│   ├── controllers/              # Route handlers
-│   │   ├── authController.js     # Auth logic (login/register)
-│   │   ├── doormatoController.js # Food ordering logic
-│   │   ├── expenseController.js  # Expense tracking logic
-│   │   └── scootigoController.js # Scooter booking logic
-│   ├── middleware/
-│   │   └── authMiddleware.js     # JWT authentication
-│   ├── models/                   # Mongoose schemas
-│   │   ├── User.js
-│   │   ├── Canteen.js
-│   │   ├── MenuItem.js
-│   │   ├── Order.js
-│   │   ├── Scooter.js
-│   │   └── Expense.js
-│   ├── routes/                   # API routes
-│   │   ├── authRoutes.js         # /api/auth/*
-│   │   ├── doormatoRoutes.js     # /api/doormato/*
-│   │   ├── expenseRoutes.js      # /api/expense/*
-│   │   └── scootigoRoutes.js     # /api/scootigo/*
-│   └── utils/                    # Utilities
-│       └── seedData.js           # Consolidated seed data
-│
-└── frontend/                     # React Frontend
-    ├── index.html                # HTML entry point
-    ├── package.json              # Frontend dependencies
-    ├── vite.config.js            # Vite configuration
-    ├── tailwind.config.js        # Tailwind CSS configuration
-    ├── postcss.config.js         # PostCSS configuration
-    └── src/
-        ├── main.jsx              # React entry point
-        ├── App.jsx               # Main App component
-        ├── index.css             # Global styles (Tailwind)
-        ├── components/           # Shared components
-        │   ├── Header.jsx        # Navigation header
-        │   ├── Footer.jsx        # Site footer
-        │   └── ProtectedRoute.jsx
-        ├── context/              # React Context
-        │   ├── AuthContext.jsx   # User authentication state
-        │   └── CartContext.jsx   # Shopping cart state
-        ├── pages/                # Page components
-        │   ├── Dashboard.jsx
-        │   ├── ExpenseTracker.jsx
-        │   ├── NotFound.jsx
-        │   ├── Auth/
-        │   │   ├── Login.jsx
-        │   │   └── Register.jsx
-        │   ├── Doormato/
-        │   │   ├── CanteenList.jsx
-        │   │   ├── Menu.jsx
-        │   │   └── Cart.jsx
-        │   └── Scootigo/
-        │       ├── Scootigo.jsx
-        │       └── BookingDetails.jsx
-        └── services/             # API service layer
-            ├── api.js            # Axios instance
-            ├── authService.js
-            ├── doormatoService.js
-            ├── expenseService.js
-            └── scootigoService.js
-```
+## ⭐ Features (Quick Glance)
+Auth (JWT) • Canteens & Menus • Cart & Orders • Scooter Booking & Availability • Weekly Expense Tracking (limits + warnings) • Admin Dashboards (Orders & Bookings) • Real‑Time Events • Dark Themed Responsive UI
 
-## Technology Stack
+## 🔌 API (Core)
 
-### Backend
-- **Node.js** - Runtime environment
-- **Express** - Web framework
-- **MongoDB Atlas** - Cloud database
-- **Mongoose** - ODM
-- **Socket.IO** - WebSocket communication
-- **JWT** - Authentication
-- **bcryptjs** - Password hashing
-- **cors** - Cross-origin resource sharing
-- **dotenv** - Environment variables
+Auth: `POST /api/auth/register`, `POST /api/auth/login`
 
-### Frontend
-- **React 18** - UI library
-- **Vite 5** - Build tool & dev server
-- **Tailwind CSS 4** - Utility-first CSS framework
-- **React Router DOM** - Routing
-- **Axios** - HTTP client
-- **Socket.IO Client** - Real-time WebSocket
-- **Context API** - State management
+Doormato: `GET /api/doormato/canteens`, `GET /api/doormato/menu/:id`, `POST /api/doormato/order`
 
-## Features
+Scootigo: `GET /api/scootigo/scooters`, `POST /api/scootigo/book`
 
-### 1. Authentication System
-- User registration with name, SRN, email, and password
-- Secure login with JWT tokens
-- Password hashing with bcrypt
-- Protected routes requiring authentication
+Expense: `GET /api/expense`, `POST /api/expense`
 
-### 2. Doormato (Food Ordering)
-- Browse canteens on campus
-- View menu items for each canteen
-- Add items to cart with quantity
-- Place orders (requires authentication)
-- Real-time cart management
+Admin: `GET /api/admin/orders`, `GET /api/admin/bookings`, `GET /api/admin/stats/orders`, `GET /api/admin/stats/bookings`
 
-### 3. Scootigo (Scooter Booking)
-- View available scooters
-- See driver details and fare per km
-- Book scooters for rides
-- Automatic fare calculation based on distance
+## 🛠️ Setup (Dev)
 
-### 4. Expense Tracker
-- Add expenses with category, amount, and notes
-- View expense history
-- Track spending over time
-- User-specific expense management
+Prereqs: Node.js ≥18, running MongoDB
 
-## API Endpoints
+Install: `npm run install-all` • Seed: `npm run seed` • Dev: `npm run dev` (concurrent) or `npm run server` + `npm run client` • Frontend http://localhost:5173 • API http://localhost:5000
 
-### Authentication (`/api/auth`)
-- `POST /register` - Register new user
-- `POST /login` - Login user
-
-### Doormato (`/api/doormato`)
-- `GET /canteens` - Get all canteens
-- `GET /menu/:canteenId` - Get menu for specific canteen
-- `POST /order` - Place order (protected)
-
-### Scootigo (`/api/scootigo`)
-- `GET /scooters` - Get available scooters
-- `POST /book` - Book scooter (protected)
-
-### Expense Tracker (`/api/expense`)
-- `GET /` - Get user expenses (protected)
-- `POST /` - Add new expense (protected)
-
-## Setup Instructions
-
-### Prerequisites
-- Node.js (v18 or higher)
-- MongoDB (running locally or connection string)
-- npm or yarn
-
-### Installation
-
-1. **Install all dependencies:**
-   ```bash
-   npm run install-all
-   ```
-   This will install dependencies for root, server, and client.
-
-2. **Configure environment variables:**
-   
-   The `.env` files have been created with default values:
-   - `MONGO_URI=mongodb://127.0.0.1:27017/pes-buddy`
-   - `JWT_SECRET=your_jwt_secret_key_change_in_production`
-   - `PORT=5000`
-
-   **Important:** Change `JWT_SECRET` in production!
-
-3. **Start MongoDB:**
-   Make sure MongoDB is running on your system:
-   ```bash
-   mongod
-   ```
-
-4. **Seed the database:**
-   ```bash
-   npm run seed
-   ```
-   This creates sample data:
-   - 2 canteens with menu items
-   - 2 scooters
-   - 1 demo user (srn: 01ABC, password: password)
-
-### Running the Application
-
-#### Development Mode (Recommended)
-
-**Option 1: Run both servers concurrently**
-```bash
-npm run dev
-```
-This starts both backend and frontend together using `concurrently`.
-
-**Option 2: Run servers separately**
-
-Terminal 1 - Backend:
-```bash
-npm run server
-# or
-cd backend && npm run dev
-```
-
-Terminal 2 - Frontend:
-```bash
-npm run client
-# or
-cd frontend && npm run dev
-```
-
-#### Production Mode
-```bash
-# Build the frontend
-cd frontend && npm run build
-
-# Start the server
-npm start
-```
+Production: build frontend (`cd frontend && npm run build`) then `npm start` at root.
 
 ### Access the Application
 
@@ -227,16 +37,9 @@ npm start
 - **Backend API:** http://localhost:5000
 - **API Health Check:** http://localhost:5000/ (should return `{"ok":true,"message":"PES Buddy API"}`)
 
-## Frontend-Backend Connection
+## 🔄 Frontend ↔ Backend
 
-### 1. API Configuration
-The frontend connects to the backend via `frontend/src/services/api.js`:
-```javascript
-const API = axios.create({
-    baseURL: 'http://localhost:5000/api',
-    headers: { 'Content-Type': 'application/json' }
-});
-```
+Axios base: `http://localhost:5000/api` • Token auto-attached if present.
 
 ### 2. Vite Proxy
 The `frontend/vite.config.js` includes a proxy configuration:
@@ -255,31 +58,13 @@ app.use(cors({
 }));
 ```
 
-### 4. Authentication Flow
-1. User logs in via frontend form
-2. Backend validates credentials and returns JWT token
-3. Token stored in localStorage
-4. Axios interceptor attaches token to all requests:
-   ```javascript
-   API.interceptors.request.use(config => {
-       const token = localStorage.getItem('pes_token');
-       if (token) config.headers.Authorization = `Bearer ${token}`;
-       return config;
-   });
-   ```
-5. Backend middleware validates token on protected routes
+Auth Flow: Login → JWT stored → Axios adds Bearer → Middleware validates.
 
-## Database Schema
+## 🗄️ Key Models (Simplified)
 
-### User
-```javascript
-{
-    name: String,
-    srn: String (unique),
-    email: String (unique),
-    password: String (hashed)
-}
-```
+Order: user + items (+quantity, canteen), total/totalAmount, status.
+Booking: user + scooter + route + distance + fare + status.
+Expense: user + category + amount + date.
 
 ### Canteen
 ```javascript
@@ -310,10 +95,28 @@ app.use(cors({
         menuItem: ObjectId,
         name: String,
         price: Number,
-        qty: Number
+        quantity: Number,
+        canteen: ObjectId (ref: Canteen)
     }],
-    total: Number,
-    status: String (enum: placed, preparing, completed, cancelled)
+    total: Number,        // legacy alias retained
+    totalAmount: Number,  // added for consistency on admin portal & dashboards
+    status: String (enum: placed, preparing, completed, cancelled, pending)
+}
+```
+
+### Booking
+```javascript
+{
+    user: ObjectId (ref: User),
+    scooter: ObjectId (ref: Scooter),
+    driver: String,
+    vehicleNumber: String,
+    pickup: String,
+    destination: String,
+    distance: Number,
+    farePerKm: Number,
+    totalFare: Number,
+    status: String (enum: pending, ongoing, completed, cancelled)
 }
 ```
 
@@ -338,21 +141,16 @@ app.use(cors({
 }
 ```
 
-## Testing
+## 🧪 Quick Test
 
-### Testing the Demo User
-1. Navigate to http://localhost:5173/auth/login
-2. Use credentials:
-   - SRN: `01ABC`
-   - Password: `password`
-3. Test all features after login
+Demo user: SRN `01ABC` / password `password` (after seed) → login → explore.
 
 ### Testing New Registration
 1. Go to http://localhost:5173/auth/register
 2. Fill in the form with unique SRN and email
 3. After registration, you'll be automatically logged in
 
-## Common Issues & Solutions
+## 🧯 Common Issues
 
 ### MongoDB Connection Error
 **Problem:** `MongoDB connection error`
@@ -381,7 +179,7 @@ app.use(cors({
 - Clear localStorage and login again
 - Verify token is being sent in Authorization header
 
-## Scripts Reference
+## 📜 Scripts
 
 ### Root Level
 - `npm run install-all` - Install all dependencies
@@ -400,31 +198,26 @@ app.use(cors({
 - `npm run build` - Build for production
 - `npm run preview` - Preview production build
 
-## Current Status
+## 📊 Status
 
-✅ **Completed:**
-- Backend server running on port 5000 with WebSocket support
-- Frontend server running on port 5173 with Socket.IO client
-- MongoDB Atlas connected (cloud database)
-- Database seeded with sample data
-- CORS properly configured
-- All API endpoints functional
-- Authentication working with JWT
-- **Real-time WebSocket communication enabled**
-- **Live connection status indicator**
-- **Real-time activity feed**
-- **Live scooter availability updates**
-- All features implemented:
-  - User registration and login
-  - Canteen browsing and menu viewing
-  - Cart management and order placement
-  - Scooter viewing and booking
-  - Expense tracking
-  - **Real-time notifications and updates**
-- No compilation errors
-- All dependencies installed
+✅ **Implemented & Stable**
+- Auth + protected routes
+- Persistent Orders & Bookings
+- Admin Portal (orders + bookings dashboards)
+- Enhanced Expense Tracker (weekly budget logic from C prototype)
+- Real‑time WebSocket updates (orders, bookings availability, expenses, notifications)
+- Canteen & driver performance aggregation (client side + endpoints for stats)
+- Modern responsive UI (About, Contact, Profile redesigns + consistent button styling)
+- Seeding script populates users, canteens, menu items, scooters
+- No build / compile errors in current state
 
-## Next Steps for Production
+🚀 **Ready For Extension**
+- Replace placeholder quick stats with live aggregated metrics caching
+- Add pagination / server-side filtering to admin endpoints
+- Add role-based auth (admin vs student) for `/api/admin/*`
+- Integrate payment simulation flow for Scootigo "Pay Now" UI (currently placeholder)
+
+## 🧭 Next Steps
 
 1. **Security:**
    - Change `JWT_SECRET` to a strong random string
@@ -447,7 +240,7 @@ app.use(cors({
    - Deploy frontend to Vercel, Netlify, or serve from backend
    - Set up CI/CD pipeline
 
-## Contributing
+## 🤝 Contributing
 
 When adding new features:
 1. Create models in `server/models/`
@@ -457,12 +250,10 @@ When adding new features:
 5. Build UI components in `client/src/pages/` or `client/src/components/`
 6. Update this README
 
-## License
+## 📄 License
 
 This project is for educational purposes.
 
 ---
 
-**Current Version:** 1.0.0  
-**Last Updated:** November 20, 2025
-**Status:** ✅ Fully Functional
+**Version:** 1.1.0 • **Updated:** Nov 20, 2025 • Admin Portal enabled
