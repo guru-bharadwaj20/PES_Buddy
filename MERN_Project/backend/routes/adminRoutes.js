@@ -78,4 +78,35 @@ router.get('/stats/bookings', protect, async (req, res) => {
 	}
 });
 
+// Get overall dashboard statistics
+router.get('/stats/dashboard', protect, async (req, res) => {
+	try {
+		const User = (await import('../models/User.js')).default;
+		
+		const totalOrders = await Order.countDocuments();
+		const totalBookings = await Booking.countDocuments();
+		const totalUsers = await User.countDocuments({ role: 'customer' });
+		
+		const orderRevenue = await Order.aggregate([
+			{ $group: { _id: null, total: { $sum: '$total' } } }
+		]);
+		
+		const bookingRevenue = await Booking.aggregate([
+			{ $group: { _id: null, total: { $sum: '$totalFare' } } }
+		]);
+		
+		const totalRevenue = (orderRevenue[0]?.total || 0) + (bookingRevenue[0]?.total || 0);
+		
+		res.json({
+			totalOrders,
+			totalBookings,
+			totalUsers,
+			totalRevenue
+		});
+	} catch (error) {
+		console.error('Error fetching dashboard stats:', error);
+		res.status(500).json({ message: 'Failed to fetch dashboard statistics' });
+	}
+});
+
 export default router;

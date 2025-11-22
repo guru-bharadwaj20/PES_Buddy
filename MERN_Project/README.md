@@ -1,7 +1,7 @@
 # 🚀 PES Buddy – MERN Stack Application
 
 ## 📘 Overview
-Campus companion: order food (Doormato), book scooters (Scootigo), track weekly spending, and monitor operations via an Admin Portal. Built with the MERN stack + Socket.IO for real‑time updates.
+Campus companion: order food (Doormato), book scooters (Scootigo), track weekly spending, and monitor operations via a fully separated Customer & Admin Portal system. Built with the MERN stack + Socket.IO for real‑time updates.
 
 ## ⚙️ Stack
 Backend: Node.js, Express, MongoDB, Mongoose, Socket.IO, JWT  
@@ -9,25 +9,39 @@ Frontend: React 18, Vite, Tailwind, React Router, Axios, Context API
 Dev: Nodemon, Concurrent scripts, Seeder
 
 ## ⭐ Features (Quick Glance)
-Auth (JWT) • Canteens & Menus • Cart & Orders • Scooter Booking & Availability • Weekly Expense Tracking (limits + warnings) • Admin Dashboards (Orders & Bookings) • Real‑Time Events • Dark Themed Responsive UI
+Customer Auth • Role-based Admin Auth • Separate Admin/Customer UI + routing • Canteens & Menus • Cart & Orders • Scooter Booking & Availability • Weekly Expense Tracking (limits + warnings) • Admin Dashboards (Orders, Bookings, Live Aggregated Stats) • Real‑Time Events • Dark / Glassmorphic Responsive UI
 
 ## 🔌 API (Core)
 
-Auth: `POST /api/auth/register`, `POST /api/auth/login`
+Auth:
+`POST /api/auth/register` (role defaults to customer)
+`POST /api/auth/login` (uses body flag `isAdmin` for admin portal login separation)
 
-Doormato: `GET /api/doormato/canteens`, `GET /api/doormato/menu/:id`, `POST /api/doormato/order`
+Doormato:
+`GET /api/doormato/canteens`  
+`GET /api/doormato/menu/:id`  
+`POST /api/doormato/order`
 
-Scootigo: `GET /api/scootigo/scooters`, `POST /api/scootigo/book`
+Scootigo:
+`GET /api/scootigo/scooters`  
+`POST /api/scootigo/book`
 
-Expense: `GET /api/expense`, `POST /api/expense`
+Expense:
+`GET /api/expense`  
+`POST /api/expense`
 
-Admin: `GET /api/admin/orders`, `GET /api/admin/bookings`, `GET /api/admin/stats/orders`, `GET /api/admin/stats/bookings`
+Admin (Protected – must authenticate as admin):
+`GET /api/admin/orders`  
+`GET /api/admin/bookings`  
+`GET /api/admin/stats/orders`  
+`GET /api/admin/stats/bookings`  
+`GET /api/admin/stats/dashboard` (NEW – consolidated quick stats: totalOrders, totalBookings, totalUsers, totalRevenue)
 
 ## 🛠️ Setup (Dev)
 
 Prereqs: Node.js ≥18, running MongoDB
 
-Install: `npm run install-all` • Seed: `npm run seed` • Dev: `npm run dev` (concurrent) or `npm run server` + `npm run client` • Frontend http://localhost:5173 • API http://localhost:5000
+Install: `npm run install-all` • Seed: `npm run seed` • Dev: `npm run dev` (concurrent) or `npm run server` + `npm run client` • Frontend http://localhost:5173 (or dynamic alternative if 5173 busy) • API http://localhost:5000
 
 Production: build frontend (`cd frontend && npm run build`) then `npm start` at root.
 
@@ -58,13 +72,18 @@ app.use(cors({
 }));
 ```
 
-Auth Flow: Login → JWT stored → Axios adds Bearer → Middleware validates.
+Auth Flow:
+1. Registration (customer or via Admin Portal for admin) does NOT auto-login (user must explicitly Sign In).  
+2. Login sends `isAdmin: true` only from admin portal pages; backend enforces role separation.  
+3. JWT stored as `pes_token` + user object `pes_user` with `role`.  
+4. Axios attaches Bearer; protected routes verify token & role.
 
 ## 🗄️ Key Models (Simplified)
 
-Order: user + items (+quantity, canteen), total/totalAmount, status.
-Booking: user + scooter + route + distance + fare + status.
-Expense: user + category + amount + date.
+Order: user + items (+quantity, canteen), total/totalAmount, status.  
+Booking: user + scooter + route + distance + fare + status.  
+Expense: user + category + amount + date.  
+User: name, srn, email, password (hashed), role: `customer | admin` (NEW) – defaults to `customer`.
 
 ### Canteen
 ```javascript
@@ -99,7 +118,7 @@ Expense: user + category + amount + date.
         canteen: ObjectId (ref: Canteen)
     }],
     total: Number,        // legacy alias retained
-    totalAmount: Number,  // added for consistency on admin portal & dashboards
+    totalAmount: Number,  // used for dashboards; ensure consistency going forward
     status: String (enum: placed, preparing, completed, cancelled, pending)
 }
 ```
@@ -145,10 +164,16 @@ Expense: user + category + amount + date.
 
 Demo user: SRN `01ABC` / password `password` (after seed) → login → explore.
 
-### Testing New Registration
-1. Go to http://localhost:5173/auth/register
-2. Fill in the form with unique SRN and email
-3. After registration, you'll be automatically logged in
+### Testing New Customer Registration
+1. Go to http://localhost:5173/auth/register  
+2. Fill form (unique SRN & email)  
+3. Submit → success message → manually click Sign In (no auto-login)  
+
+### Testing Admin Flow
+1. Visit http://localhost:5173/admin  
+2. Click “Register as Admin” (creates user with role=admin)  
+3. After success → manually navigate to “Admin Sign In”  
+4. Gain access to `/admin/dashboard`, `/admin/profile`, etc.
 
 ## 🧯 Common Issues
 
@@ -172,12 +197,9 @@ Demo user: SRN `01ABC` / password `password` (after seed) → login → explore.
 - Check that both servers are running
 - Clear browser cache
 
-### Token Not Working
-**Problem:** Authentication fails despite valid token
-**Solution:**
-- Check `JWT_SECRET` matches in `.env`
-- Clear localStorage and login again
-- Verify token is being sent in Authorization header
+### Role / Token Issues
+**Problem:** Customer tries admin route or admin uses customer login path.  
+**Solution:** Ensure correct portal used (admin pages send `isAdmin: true`). Clear localStorage and re-login if role mismatch.
 
 ## 📜 Scripts
 
@@ -212,10 +234,11 @@ Demo user: SRN `01ABC` / password `password` (after seed) → login → explore.
 - No build / compile errors in current state
 
 🚀 **Ready For Extension**
-- Replace placeholder quick stats with live aggregated metrics caching
-- Add pagination / server-side filtering to admin endpoints
-- Add role-based auth (admin vs student) for `/api/admin/*`
-- Integrate payment simulation flow for Scootigo "Pay Now" UI (currently placeholder)
+- Cache dashboard stats (current call aggregates live each request)
+- Pagination / server-side filtering for admin data tables
+- Fine-grained permission layers beyond simple role flag
+- Payment simulation flow for Scootigo "Pay Now" UI (currently placeholder)
+- Profile update & password endpoints (currently mocked / pending real implementation)
 
 ## 🧭 Next Steps
 
@@ -256,4 +279,4 @@ This project is for educational purposes.
 
 ---
 
-**Version:** 1.1.0 • **Updated:** Nov 20, 2025 • Admin Portal enabled
+**Version:** 1.2.0 • **Updated:** Nov 22, 2025 • Admin & Customer portals fully separated; live dashboard stats & admin profile added
