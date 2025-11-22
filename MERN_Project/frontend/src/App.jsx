@@ -12,12 +12,14 @@ import Contact from './pages/Contact';
 import Dashboard from './pages/Dashboard';
 import Profile from './pages/Profile';
 import ExpenseTracker from './pages/ExpenseTracker';
+import Notifications from './pages/Notifications';
 import NotFound from './pages/NotFound';
 import Login from './pages/Auth/Login';
 import Register from './pages/Auth/Register';
 import CanteenList from './pages/Doormato/CanteenList';
 import Menu from './pages/Doormato/Menu';
 import Cart from './pages/Doormato/Cart';
+import MyOrders from './pages/Doormato/MyOrders';
 import Scootigo from './pages/Scootigo/Scootigo';
 import AdminHome from './pages/Admin/AdminHome';
 import AdminLogin from './pages/Admin/AdminLogin';
@@ -81,6 +83,14 @@ const App = () => {
 						} 
 					/>
 					<Route 
+						path="/doormato/my-orders" 
+						element={
+							<ProtectedRoute>
+								<MyOrders />
+							</ProtectedRoute>
+						} 
+					/>
+					<Route 
 						path="/scootigo" 
 						element={
 							<ProtectedRoute>
@@ -93,6 +103,14 @@ const App = () => {
 						element={
 							<ProtectedRoute>
 								<ExpenseTracker />
+							</ProtectedRoute>
+						} 
+					/>
+					<Route 
+						path="/notifications" 
+						element={
+							<ProtectedRoute>
+								<Notifications />
 							</ProtectedRoute>
 						} 
 					/>

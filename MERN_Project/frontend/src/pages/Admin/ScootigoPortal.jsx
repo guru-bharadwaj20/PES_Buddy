@@ -1,14 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import scootigoService from '../../services/scootigoService';
+import socketService from '../../services/socketService';
 
 const ScootigoPortal = () => {
 	const [bookings, setBookings] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [searchTerm, setSearchTerm] = useState('');
+	const [notification, setNotification] = useState(null);
 
 	useEffect(() => {
 		fetchBookings();
+		
+		// Listen for real-time scooter booking updates
+		socketService.onScooterBooked((data) => {
+			console.log('🛵 New booking received in admin portal:', data);
+			setNotification(`New booking: ${data.bookedBy} booked scooter ${data.scooterId}`);
+			setTimeout(() => setNotification(null), 4000);
+			fetchBookings(); // Refresh bookings list
+		});
+		
+		// Cleanup listener on unmount
+		return () => {
+			socketService.removeListener('scooter:booked');
+		};
 	}, []);
 
 	const fetchBookings = async () => {
@@ -59,6 +74,19 @@ const ScootigoPortal = () => {
 
 	return (
 		<main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+			{/* Real-time notification */}
+			{notification && (
+				<div className="fixed top-4 right-4 z-50 animate-slide-in">
+					<div className="bg-green-500 text-white px-6 py-4 rounded-lg shadow-2xl flex items-center space-x-3">
+						<div className="text-2xl animate-bounce">🔔</div>
+						<div>
+							<p className="font-bold">New Booking!</p>
+							<p className="text-sm">{notification}</p>
+						</div>
+					</div>
+				</div>
+			)}
+			
 			{/* Header */}
 			<div className="mb-8">
 				<Link to="/admin" className="text-light-blue hover:text-blue-400 mb-4 flex items-center space-x-2 w-fit">

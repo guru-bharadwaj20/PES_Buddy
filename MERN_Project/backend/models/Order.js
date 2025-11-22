@@ -15,7 +15,8 @@ const orderSchema = new Schema({
 	items: [orderItemSchema],
 	totalAmount: { type: Number, required: true }, // Added totalAmount alias
 	total: { type: Number, required: true },
-	status: { type: String, enum: ["placed", "preparing", "completed", "cancelled", "pending"], default: "placed" }
+	status: { type: String, enum: ["pending", "accepted", "rejected", "preparing", "completed", "cancelled"], default: "pending" },
+	rejectionReason: { type: String }
 }, { timestamps: true });
 
 const Order = mongoose.model("Order", orderSchema);
