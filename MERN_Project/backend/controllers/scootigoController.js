@@ -1,5 +1,6 @@
 import Scooter from "../models/Scooter.js";
 import Booking from "../models/Booking.js";
+import { createNotification } from "./notificationController.js";
 
 export const getAvailableScooters = async (req, res) => {
 	try {
@@ -41,6 +42,16 @@ export const bookScooter = async (req, res) => {
 			status: 'pending'
 		});
 
+		// Create notification for user
+		await createNotification(
+			user._id,
+			'booking',
+			'Scooter Booked',
+			`Your ride with ${scooter.driverName} has been booked successfully. Total fare: ₹${totalFare.toFixed(2)}`,
+			booking._id,
+			'🛵'
+		);
+
 		// Emit real-time scooter availability update
 		const io = req.app.get("io");
 		if (io) {
@@ -53,6 +64,17 @@ export const bookScooter = async (req, res) => {
 		}
 
 		res.status(200).json({ message: "Scooter booked", booking });
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({ message: "Server error" });
+	}
+};
+
+export const getUserBookings = async (req, res) => {
+	try {
+		const user = req.user;
+		const bookings = await Booking.find({ user: user._id }).sort({ createdAt: -1 }).lean();
+		res.json(bookings);
 	} catch (err) {
 		console.error(err);
 		res.status(500).json({ message: "Server error" });

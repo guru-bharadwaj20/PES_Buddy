@@ -10,9 +10,14 @@ const book = async (payload) => {
 	return res.data;
 };
 
+const getUserBookings = async () => {
+	const res = await API.get('/scootigo/bookings');
+	return res.data;
+};
+
 const getAllBookings = async () => {
 	const res = await API.get('/admin/bookings');
 	return res.data;
 };
 
-export default { getScooters, book, getAllBookings };
+export default { getScooters, book, getUserBookings, getAllBookings };

@@ -2,12 +2,15 @@ import React, { useContext, useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { CartContext } from '../context/CartContext';
+import notificationService from '../services/notificationService';
+import socketService from '../services/socketService';
 
 const Header = () => {
 	const { user, logout, socketConnected } = useContext(AuthContext);
 	const { items } = useContext(CartContext);
 	const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 	const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
+	const [unreadCount, setUnreadCount] = useState(0);
 	const location = useLocation();
 	const navigate = useNavigate();
 	const dropdownRef = useRef(null);
@@ -25,6 +28,32 @@ const Header = () => {
 	const toggleProfileDropdown = () => setProfileDropdownOpen(!profileDropdownOpen);
 
 	const isActive = (path) => location.pathname === path || location.pathname.startsWith(path + '/');
+
+	// Fetch unread notification count
+	useEffect(() => {
+		if (user && user.role === 'customer') {
+			fetchUnreadCount();
+			
+			// Listen for new notifications
+			socketService.onNotification(() => {
+				fetchUnreadCount();
+			});
+			
+			// Listen for order status changes
+			socketService.onOrderStatus(() => {
+				fetchUnreadCount();
+			});
+		}
+	}, [user]);
+
+	const fetchUnreadCount = async () => {
+		try {
+			const data = await notificationService.getUnreadCount();
+			setUnreadCount(data.count);
+		} catch (error) {
+			console.error('Failed to fetch unread count:', error);
+		}
+	};
 
 	// Close dropdown when clicking outside
 	useEffect(() => {
@@ -229,6 +258,27 @@ const Header = () => {
 									)}
 								</div>
 
+								{/* Notification Bell - Only for customers */}
+								{user.role !== 'admin' && (
+									<Link 
+										to="/notifications" 
+										className={`px-3 py-2 rounded-lg font-semibold transition-all duration-200 relative ${
+											isActive('/notifications')
+												? 'bg-light-blue text-white shadow-lg shadow-light-blue/30' 
+												: 'text-gray-300 hover:text-white hover:bg-white/10'
+										}`}
+									>
+										<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+											<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+										</svg>
+										{unreadCount > 0 && (
+											<span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
+												{unreadCount > 99 ? '99+' : unreadCount}
+											</span>
+										)}
+									</Link>
+								)}
+
 								{/* Cart Icon - Only for customers */}
 								{user.role !== 'admin' && (
 									<Link 
@@ -268,22 +318,59 @@ const Header = () => {
 						)}
 					</div>
 
-					{/* Mobile Menu Button */}
-					<button 
-						onClick={toggleMobileMenu}
-						className="lg:hidden p-2 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-all duration-200"
-						aria-label="Toggle menu"
-					>
-						{mobileMenuOpen ? (
-							<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-							</svg>
-						) : (
-							<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-							</svg>
+					{/* Mobile Icons and Menu Button */}
+					<div className="lg:hidden flex items-center space-x-2">
+						{/* Notification Bell - Only for customers */}
+						{user && user.role !== 'admin' && (
+							<Link 
+								to="/notifications" 
+								className="p-2 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-all duration-200 relative"
+							>
+								<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+								</svg>
+								{unreadCount > 0 && (
+									<span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
+										{unreadCount > 99 ? '99+' : unreadCount}
+									</span>
+								)}
+							</Link>
 						)}
-					</button>
+						
+						{/* Cart Icon - Only for customers */}
+						{user && user.role !== 'admin' && (
+							<Link 
+								to="/doormato/cart" 
+								className="p-2 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-all duration-200 relative"
+							>
+								<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+								</svg>
+								{items.length > 0 && (
+									<span className="absolute -top-1 -right-1 bg-light-red text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+										{items.length}
+									</span>
+								)}
+							</Link>
+						)}
+						
+						{/* Hamburger Menu Button */}
+						<button 
+							onClick={toggleMobileMenu}
+							className="p-2 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-all duration-200"
+							aria-label="Toggle menu"
+						>
+							{mobileMenuOpen ? (
+								<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+								</svg>
+							) : (
+								<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+								</svg>
+							)}
+						</button>
+					</div>
 				</div>
 			</div>
 
@@ -480,6 +567,51 @@ const Header = () => {
 											<p className="text-xs text-gray-400">{user.email}</p>
 										</div>
 									</div>
+									
+									{/* Notification and Cart buttons - Only for customers */}
+									{user.role !== 'admin' && (
+										<div className="flex gap-2">
+											<Link
+												to="/notifications"
+												onClick={closeMobileMenu}
+												className={`flex-1 px-4 py-3 ${
+													isActive('/notifications')
+														? 'bg-light-blue text-white'
+														: 'bg-white/5 text-gray-300 hover:bg-white/10 hover:text-white'
+												} font-semibold rounded-lg transition-all flex items-center justify-center space-x-2 relative border border-white/10`}
+											>
+												<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+													<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+												</svg>
+												<span>Notifications</span>
+												{unreadCount > 0 && (
+													<span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
+														{unreadCount > 99 ? '99+' : unreadCount}
+													</span>
+												)}
+											</Link>
+											<Link
+												to="/doormato/cart"
+												onClick={closeMobileMenu}
+												className={`flex-1 px-4 py-3 ${
+													isActive('/doormato/cart')
+														? 'bg-light-blue text-white'
+														: 'bg-white/5 text-gray-300 hover:bg-white/10 hover:text-white'
+												} font-semibold rounded-lg transition-all flex items-center justify-center space-x-2 relative border border-white/10`}
+											>
+												<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+													<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+												</svg>
+												<span>Cart</span>
+												{items.length > 0 && (
+													<span className="absolute -top-1 -right-1 bg-light-red text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+														{items.length}
+													</span>
+												)}
+											</Link>
+										</div>
+									)}
+									
 									<Link
 										to={user.role === 'admin' ? '/admin/profile' : '/profile'}
 										onClick={closeMobileMenu}

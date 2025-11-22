@@ -82,8 +82,13 @@ export const AuthProvider = ({ children }) => {
 	};
 
 	const logout = () => {
+		// Clear all user-specific data from localStorage
+		const userId = user?._id;
 		localStorage.removeItem('pes_token');
 		localStorage.removeItem('pes_user');
+		if (userId) {
+			localStorage.removeItem(`pesbuddy_cart_${userId}`);
+		}
 		setToken(null);
 		setUser(null);
 		socketService.disconnect();

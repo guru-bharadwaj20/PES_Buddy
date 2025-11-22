@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import api from '../../services/api';
+import socketService from '../../services/socketService';
 
 const AdminPortal = () => {
 	const navigate = useNavigate();
@@ -29,6 +30,23 @@ const AdminPortal = () => {
 		};
 
 		fetchStats();
+		
+		// Listen for real-time updates to refresh stats
+		socketService.onNewOrder((data) => {
+			console.log('📊 New order detected, refreshing admin stats');
+			fetchStats();
+		});
+		
+		socketService.onScooterBooked((data) => {
+			console.log('📊 New booking detected, refreshing admin stats');
+			fetchStats();
+		});
+		
+		// Cleanup listeners on unmount
+		return () => {
+			socketService.removeListener('order:new');
+			socketService.removeListener('scooter:booked');
+		};
 	}, [token]);
 
 	return (

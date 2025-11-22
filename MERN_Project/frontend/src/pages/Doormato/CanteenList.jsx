@@ -19,7 +19,16 @@ const CanteenList = () => {
 	return (
 		<main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
 			<div className="mb-8">
-				<h2 className="text-4xl font-bold text-white mb-3">🍔 Doormato</h2>
+				<div className="flex justify-between items-center mb-3">
+					<h2 className="text-4xl font-bold text-white">🍔 Doormato</h2>
+					<Link 
+						to="/doormato/my-orders"
+						className="px-6 py-3 bg-light-blue hover:bg-blue-600 text-white font-bold rounded-lg transition-all flex items-center space-x-2"
+					>
+						<span>📦</span>
+						<span>My Orders</span>
+					</Link>
+				</div>
 				<p className="text-xl text-gray-300">Order delicious food from campus canteens</p>
 			</div>
 

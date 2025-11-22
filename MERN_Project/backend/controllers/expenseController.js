@@ -1,4 +1,5 @@
 import Expense from "../models/Expense.js";
+import { createNotification } from "./notificationController.js";
 
 export const addExpense = async (req, res) => {
 	try {
@@ -6,6 +7,16 @@ export const addExpense = async (req, res) => {
 		const { category, amount, note, date } = req.body;
 		if (!category || amount == null) return res.status(400).json({ message: "Category and amount required" });
 		const expense = await Expense.create({ user: user._id, category, amount, note, date: date || Date.now() });
+		
+		// Create notification for user
+		await createNotification(
+			user._id,
+			'expense',
+			'Expense Added',
+			`New ${category} expense of ₹${amount.toFixed(2)} has been recorded.`,
+			expense._id,
+			'💰'
+		);
 		
 		// Emit real-time expense notification to user
 		const io = req.app.get("io");

@@ -11,6 +11,7 @@ import doormatoRoutes from "./routes/doormatoRoutes.js";
 import scootigoRoutes from "./routes/scootigoRoutes.js";
 import expenseRoutes from "./routes/expenseRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
+import notificationRoutes from "./routes/notificationRoutes.js";
 
 dotenv.config();
 
@@ -109,6 +110,7 @@ app.use("/api/doormato", doormatoRoutes);
 app.use("/api/scootigo", scootigoRoutes);
 app.use("/api/expense", expenseRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 // health
 app.get("/", (req, res) => res.json({ 

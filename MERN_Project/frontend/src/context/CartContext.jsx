@@ -1,18 +1,31 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useContext } from 'react';
+import { AuthContext } from './AuthContext';
 
 export const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
-	const [items, setItems] = useState(() => {
-		// Load cart from localStorage on initialization
-		const savedCart = localStorage.getItem('pesbuddy_cart');
-		return savedCart ? JSON.parse(savedCart) : [];
-	});
+	const { user } = useContext(AuthContext);
+	const [items, setItems] = useState([]);
 
-	// Save cart to localStorage whenever it changes
+	// Load cart from localStorage when user changes
 	useEffect(() => {
-		localStorage.setItem('pesbuddy_cart', JSON.stringify(items));
-	}, [items]);
+		if (user) {
+			const cartKey = `pesbuddy_cart_${user._id}`;
+			const savedCart = localStorage.getItem(cartKey);
+			setItems(savedCart ? JSON.parse(savedCart) : []);
+		} else {
+			// Clear cart when user logs out
+			setItems([]);
+		}
+	}, [user]);
+
+	// Save cart to localStorage whenever it changes (user-specific)
+	useEffect(() => {
+		if (user) {
+			const cartKey = `pesbuddy_cart_${user._id}`;
+			localStorage.setItem(cartKey, JSON.stringify(items));
+		}
+	}, [items, user]);
 
 	const addItem = (item) => {
 		setItems((prev) => {
@@ -39,7 +52,10 @@ export const CartProvider = ({ children }) => {
 
 	const clear = () => {
 		setItems([]);
-		localStorage.removeItem('pesbuddy_cart');
+		if (user) {
+			const cartKey = `pesbuddy_cart_${user._id}`;
+			localStorage.removeItem(cartKey);
+		}
 	};
 
 	const getTotalItems = () => {
