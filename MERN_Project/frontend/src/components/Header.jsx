@@ -70,48 +70,83 @@ const Header = () => {
 					{/* Desktop Navigation */}
 					<nav className="hidden lg:flex items-center space-x-1">
 						{user ? (
-							<>
-								<Link 
-									to="/dashboard" 
-									className={`px-4 py-2 rounded-lg font-semibold transition-all duration-200 ${
-										isActive('/dashboard') 
-											? 'bg-light-blue text-white shadow-lg shadow-light-blue/30' 
-											: 'text-gray-300 hover:text-white hover:bg-white/10'
-									}`}
-								>
-									Dashboard
-								</Link>
-								<Link 
-									to="/doormato" 
-									className={`px-4 py-2 rounded-lg font-semibold transition-all duration-200 ${
-										isActive('/doormato')
-											? 'bg-light-blue text-white shadow-lg shadow-light-blue/30' 
-											: 'text-gray-300 hover:text-white hover:bg-white/10'
-									}`}
-								>
-									🍔 Doormato
-								</Link>
-								<Link 
-									to="/scootigo" 
-									className={`px-4 py-2 rounded-lg font-semibold transition-all duration-200 ${
-										isActive('/scootigo')
-											? 'bg-light-blue text-white shadow-lg shadow-light-blue/30' 
-											: 'text-gray-300 hover:text-white hover:bg-white/10'
-									}`}
-								>
-									🛵 Scootigo
-								</Link>
-								<Link 
-									to="/expense-tracker" 
-									className={`px-4 py-2 rounded-lg font-semibold transition-all duration-200 ${
-										isActive('/expense-tracker') 
-											? 'bg-light-blue text-white shadow-lg shadow-light-blue/30' 
-											: 'text-gray-300 hover:text-white hover:bg-white/10'
-									}`}
-								>
-									💰 Expenses
-								</Link>
-							</>
+							user.role === 'admin' ? (
+								<>
+									<Link 
+										to="/admin/dashboard" 
+										className={`px-4 py-2 rounded-lg font-semibold transition-all duration-200 ${
+											isActive('/admin/dashboard') || isActive('/admin') && location.pathname === '/admin/dashboard'
+												? 'bg-yellow-500 text-gray-900 shadow-lg shadow-yellow-500/30' 
+												: 'text-gray-300 hover:text-white hover:bg-white/10'
+										}`}
+									>
+										Admin Dashboard
+									</Link>
+									<Link 
+										to="/admin/doormato" 
+										className={`px-4 py-2 rounded-lg font-semibold transition-all duration-200 ${
+											isActive('/admin/doormato')
+												? 'bg-yellow-500 text-gray-900 shadow-lg shadow-yellow-500/30' 
+												: 'text-gray-300 hover:text-white hover:bg-white/10'
+										}`}
+									>
+										🍔 Doormato Control
+									</Link>
+									<Link 
+										to="/admin/scootigo" 
+										className={`px-4 py-2 rounded-lg font-semibold transition-all duration-200 ${
+											isActive('/admin/scootigo')
+												? 'bg-yellow-500 text-gray-900 shadow-lg shadow-yellow-500/30' 
+												: 'text-gray-300 hover:text-white hover:bg-white/10'
+										}`}
+									>
+										🛵 Scootigo Control
+									</Link>
+								</>
+							) : (
+								<>
+									<Link 
+										to="/dashboard" 
+										className={`px-4 py-2 rounded-lg font-semibold transition-all duration-200 ${
+											isActive('/dashboard') 
+												? 'bg-light-blue text-white shadow-lg shadow-light-blue/30' 
+												: 'text-gray-300 hover:text-white hover:bg-white/10'
+										}`}
+									>
+										Dashboard
+									</Link>
+									<Link 
+										to="/doormato" 
+										className={`px-4 py-2 rounded-lg font-semibold transition-all duration-200 ${
+											isActive('/doormato')
+												? 'bg-light-blue text-white shadow-lg shadow-light-blue/30' 
+												: 'text-gray-300 hover:text-white hover:bg-white/10'
+										}`}
+									>
+										🍔 Doormato
+									</Link>
+									<Link 
+										to="/scootigo" 
+										className={`px-4 py-2 rounded-lg font-semibold transition-all duration-200 ${
+											isActive('/scootigo')
+												? 'bg-light-blue text-white shadow-lg shadow-light-blue/30' 
+												: 'text-gray-300 hover:text-white hover:bg-white/10'
+										}`}
+									>
+										🛵 Scootigo
+									</Link>
+									<Link 
+										to="/expense-tracker" 
+										className={`px-4 py-2 rounded-lg font-semibold transition-all duration-200 ${
+											isActive('/expense-tracker') 
+												? 'bg-light-blue text-white shadow-lg shadow-light-blue/30' 
+												: 'text-gray-300 hover:text-white hover:bg-white/10'
+										}`}
+									>
+										💰 Expenses
+									</Link>
+								</>
+							)
 						) : (
 							<>
 								<Link 
@@ -171,24 +206,14 @@ const Header = () => {
 									{profileDropdownOpen && (
 										<div className="absolute right-0 mt-2 w-56 bg-gray-900 rounded-lg shadow-2xl border border-white/10 py-2 z-50 animate-slide-down">
 											<Link
-												to="/profile"
+												to={user.role === 'admin' ? '/admin/profile' : '/profile'}
 												onClick={() => setProfileDropdownOpen(false)}
 												className="w-full px-4 py-3 text-left text-white hover:bg-white/10 transition-all flex items-center space-x-3 border-b border-white/10"
 											>
-												<svg className="w-5 h-5 text-light-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+												<svg className={`w-5 h-5 ${user.role === 'admin' ? 'text-yellow-500' : 'text-light-blue'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
 													<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
 												</svg>
 												<span className="font-semibold">My Profile</span>
-											</Link>
-											<Link
-												to="/admin"
-												onClick={() => setProfileDropdownOpen(false)}
-												className="w-full px-4 py-3 text-left text-white hover:bg-white/10 transition-all flex items-center space-x-3 border-b border-white/10"
-											>
-												<svg className="w-5 h-5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-													<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-												</svg>
-												<span className="font-semibold">Admin Portal</span>
 											</Link>
 											<button 
 												onClick={handleLogout}
@@ -204,24 +229,26 @@ const Header = () => {
 									)}
 								</div>
 
-								{/* Cart Icon */}
-								<Link 
-									to="/doormato/cart" 
-									className={`px-3 py-2 rounded-lg font-semibold transition-all duration-200 relative ${
-										isActive('/doormato/cart')
-											? 'bg-light-blue text-white shadow-lg shadow-light-blue/30' 
-											: 'text-gray-300 hover:text-white hover:bg-white/10'
-									}`}
-								>
-									<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-										<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-									</svg>
-									{items.length > 0 && (
-										<span className="absolute -top-1 -right-1 bg-light-red text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-											{items.length}
-										</span>
-									)}
-								</Link>
+								{/* Cart Icon - Only for customers */}
+								{user.role !== 'admin' && (
+									<Link 
+										to="/doormato/cart" 
+										className={`px-3 py-2 rounded-lg font-semibold transition-all duration-200 relative ${
+											isActive('/doormato/cart')
+												? 'bg-light-blue text-white shadow-lg shadow-light-blue/30' 
+												: 'text-gray-300 hover:text-white hover:bg-white/10'
+										}`}
+									>
+										<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+											<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+										</svg>
+										{items.length > 0 && (
+											<span className="absolute -top-1 -right-1 bg-light-red text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+												{items.length}
+											</span>
+										)}
+									</Link>
+								)}
 							</>
 						) : (
 							<>
@@ -297,58 +324,101 @@ const Header = () => {
 						{/* Mobile Navigation Links */}
 						<nav className="flex-1 overflow-y-auto p-6 space-y-2">
 							{user ? (
-								<>
-									<Link 
-										to="/dashboard" 
-										onClick={closeMobileMenu}
-										className={`flex items-center space-x-3 px-4 py-3 rounded-lg font-semibold transition-all ${
-											isActive('/dashboard') 
-												? 'bg-light-blue text-white shadow-lg' 
-												: 'text-gray-300 hover:bg-white/10 hover:text-white'
-										}`}
-									>
-										<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-											<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-										</svg>
-										<span>Dashboard</span>
-									</Link>
-									<Link 
-										to="/doormato" 
-										onClick={closeMobileMenu}
-										className={`flex items-center space-x-3 px-4 py-3 rounded-lg font-semibold transition-all ${
-											isActive('/doormato')
-												? 'bg-light-blue text-white shadow-lg' 
-												: 'text-gray-300 hover:bg-white/10 hover:text-white'
-										}`}
-									>
-										<span className="text-xl">🍔</span>
-										<span>Doormato</span>
-									</Link>
-									<Link 
-										to="/scootigo" 
-										onClick={closeMobileMenu}
-										className={`flex items-center space-x-3 px-4 py-3 rounded-lg font-semibold transition-all ${
-											isActive('/scootigo')
-												? 'bg-light-blue text-white shadow-lg' 
-												: 'text-gray-300 hover:bg-white/10 hover:text-white'
-										}`}
-									>
-										<span className="text-xl">🛵</span>
-										<span>Scootigo</span>
-									</Link>
-									<Link 
-										to="/expense-tracker" 
-										onClick={closeMobileMenu}
-										className={`flex items-center space-x-3 px-4 py-3 rounded-lg font-semibold transition-all ${
-											isActive('/expense-tracker') 
-												? 'bg-light-blue text-white shadow-lg' 
-												: 'text-gray-300 hover:bg-white/10 hover:text-white'
-										}`}
-									>
-										<span className="text-xl">💰</span>
-										<span>Expense Tracker</span>
-									</Link>
-								</>
+								user.role === 'admin' ? (
+									<>
+										<Link 
+											to="/admin/dashboard" 
+											onClick={closeMobileMenu}
+											className={`flex items-center space-x-3 px-4 py-3 rounded-lg font-semibold transition-all ${
+												isActive('/admin/dashboard') 
+													? 'bg-yellow-500 text-gray-900 shadow-lg' 
+													: 'text-gray-300 hover:bg-white/10 hover:text-white'
+											}`}
+										>
+											<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+												<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+											</svg>
+											<span>Admin Dashboard</span>
+										</Link>
+										<Link 
+											to="/admin/doormato" 
+											onClick={closeMobileMenu}
+											className={`flex items-center space-x-3 px-4 py-3 rounded-lg font-semibold transition-all ${
+												isActive('/admin/doormato')
+													? 'bg-yellow-500 text-gray-900 shadow-lg' 
+													: 'text-gray-300 hover:bg-white/10 hover:text-white'
+											}`}
+										>
+											<span className="text-xl">🍔</span>
+											<span>Doormato Control</span>
+										</Link>
+										<Link 
+											to="/admin/scootigo" 
+											onClick={closeMobileMenu}
+											className={`flex items-center space-x-3 px-4 py-3 rounded-lg font-semibold transition-all ${
+												isActive('/admin/scootigo')
+													? 'bg-yellow-500 text-gray-900 shadow-lg' 
+													: 'text-gray-300 hover:bg-white/10 hover:text-white'
+											}`}
+										>
+											<span className="text-xl">🛵</span>
+											<span>Scootigo Control</span>
+										</Link>
+									</>
+								) : (
+									<>
+										<Link 
+											to="/dashboard" 
+											onClick={closeMobileMenu}
+											className={`flex items-center space-x-3 px-4 py-3 rounded-lg font-semibold transition-all ${
+												isActive('/dashboard') 
+													? 'bg-light-blue text-white shadow-lg' 
+													: 'text-gray-300 hover:bg-white/10 hover:text-white'
+											}`}
+										>
+											<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+												<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+											</svg>
+											<span>Dashboard</span>
+										</Link>
+										<Link 
+											to="/doormato" 
+											onClick={closeMobileMenu}
+											className={`flex items-center space-x-3 px-4 py-3 rounded-lg font-semibold transition-all ${
+												isActive('/doormato')
+													? 'bg-light-blue text-white shadow-lg' 
+													: 'text-gray-300 hover:bg-white/10 hover:text-white'
+											}`}
+										>
+											<span className="text-xl">🍔</span>
+											<span>Doormato</span>
+										</Link>
+										<Link 
+											to="/scootigo" 
+											onClick={closeMobileMenu}
+											className={`flex items-center space-x-3 px-4 py-3 rounded-lg font-semibold transition-all ${
+												isActive('/scootigo')
+													? 'bg-light-blue text-white shadow-lg' 
+													: 'text-gray-300 hover:bg-white/10 hover:text-white'
+											}`}
+										>
+											<span className="text-xl">🛵</span>
+											<span>Scootigo</span>
+										</Link>
+										<Link 
+											to="/expense-tracker" 
+											onClick={closeMobileMenu}
+											className={`flex items-center space-x-3 px-4 py-3 rounded-lg font-semibold transition-all ${
+												isActive('/expense-tracker') 
+													? 'bg-light-blue text-white shadow-lg' 
+													: 'text-gray-300 hover:text-white hover:bg-white/10'
+											}`}
+										>
+											<span className="text-xl">💰</span>
+											<span>Expense Tracker</span>
+										</Link>
+									</>
+								)
 							) : (
 								<>
 									<Link 
@@ -411,24 +481,14 @@ const Header = () => {
 										</div>
 									</div>
 									<Link
-										to="/profile"
+										to={user.role === 'admin' ? '/admin/profile' : '/profile'}
 										onClick={closeMobileMenu}
-										className="w-full px-4 py-3 bg-light-blue hover:bg-blue-600 text-white font-semibold rounded-lg transition-all flex items-center justify-center space-x-2"
+										className={`w-full px-4 py-3 ${user.role === 'admin' ? 'bg-yellow-500 hover:bg-yellow-400 text-gray-900' : 'bg-light-blue hover:bg-blue-600 text-white'} font-semibold rounded-lg transition-all flex items-center justify-center space-x-2`}
 									>
 										<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 											<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
 										</svg>
 										<span>My Profile</span>
-									</Link>
-									<Link
-										to="/admin"
-										onClick={closeMobileMenu}
-										className="w-full px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-all flex items-center justify-center space-x-2"
-									>
-										<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-											<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-										</svg>
-										<span>Admin Portal</span>
 									</Link>
 									<button 
 										onClick={handleLogout} 

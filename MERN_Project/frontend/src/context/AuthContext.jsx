@@ -44,7 +44,19 @@ export const AuthProvider = ({ children }) => {
 	};
 
 	const login = async (srn, password) => {
-		const res = await authService.login({ srn, password });
+		const res = await authService.login({ srn, password, isAdmin: false });
+		if (res && res.token) {
+			localStorage.setItem('pes_token', res.token);
+			localStorage.setItem('pes_user', JSON.stringify(res.user));
+			setToken(res.token);
+			setUser(res.user);
+			connectWebSocket(res.token);
+		}
+		return res;
+	};
+
+	const loginAdmin = async (srn, password) => {
+		const res = await authService.login({ srn, password, isAdmin: true });
 		if (res && res.token) {
 			localStorage.setItem('pes_token', res.token);
 			localStorage.setItem('pes_user', JSON.stringify(res.user));
@@ -56,7 +68,14 @@ export const AuthProvider = ({ children }) => {
 	};
 
 	const register = async (payload) => {
-		const res = await authService.register(payload);
+		const res = await authService.register({ ...payload, role: 'customer' });
+		// Do NOT auto-login after registration
+		// User must explicitly login after registering
+		return res;
+	};
+
+	const registerAdmin = async (payload) => {
+		const res = await authService.register({ ...payload, role: 'admin' });
 		// Do NOT auto-login after registration
 		// User must explicitly login after registering
 		return res;
@@ -72,7 +91,7 @@ export const AuthProvider = ({ children }) => {
 	};
 
 	return (
-		<AuthContext.Provider value={{ user, token, login, logout, register, socketConnected }}>
+		<AuthContext.Provider value={{ user, token, login, loginAdmin, logout, register, registerAdmin, socketConnected }}>
 			{children}
 		</AuthContext.Provider>
 	);

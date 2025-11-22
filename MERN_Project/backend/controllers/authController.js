@@ -9,13 +9,13 @@ const generateToken = (userId) => jwt.sign({ id: userId }, JWT_SECRET, { expires
 
 export const register = async (req, res) => {
 	try {
-		const { name, srn, password, email } = req.body;
+		const { name, srn, password, email, role } = req.body;
 		if (!name || !srn || !password) return res.status(400).json({ message: "Name, SRN and password required" });
 		const exists = await User.findOne({ srn });
 		if (exists) return res.status(400).json({ message: "User with this SRN already exists" });
-		const user = await User.create({ name, srn, password, email });
+		const user = await User.create({ name, srn, password, email, role: role || 'customer' });
 		const token = generateToken(user._id);
-		res.status(201).json({ user: { id: user._id, name: user.name, srn: user.srn, email: user.email }, token });
+		res.status(201).json({ user: { id: user._id, name: user.name, srn: user.srn, email: user.email, role: user.role }, token });
 	} catch (err) {
 		console.error(err);
 		res.status(500).json({ message: "Server error" });
@@ -24,14 +24,25 @@ export const register = async (req, res) => {
 
 export const login = async (req, res) => {
 	try {
-		const { srn, password } = req.body;
+		const { srn, password, isAdmin } = req.body;
 		if (!srn || !password) return res.status(400).json({ message: "SRN and password required" });
 		const user = await User.findOne({ srn });
 		if (!user) return res.status(401).json({ message: "Invalid credentials" });
+		
+		// Check if admin login is requested and user has admin role
+		if (isAdmin && user.role !== 'admin') {
+			return res.status(403).json({ message: "Access denied. Admin privileges required." });
+		}
+		
+		// Check if customer login but user is admin (should use admin portal)
+		if (!isAdmin && user.role === 'admin') {
+			return res.status(403).json({ message: "Please use admin portal to login." });
+		}
+		
 		const isMatch = await user.comparePassword(password);
 		if (!isMatch) return res.status(401).json({ message: "Invalid credentials" });
 		const token = generateToken(user._id);
-		res.json({ user: { id: user._id, name: user.name, srn: user.srn, email: user.email }, token });
+		res.json({ user: { id: user._id, name: user.name, srn: user.srn, email: user.email, role: user.role }, token });
 	} catch (err) {
 		console.error(err);
 		res.status(500).json({ message: "Server error" });

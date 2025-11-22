@@ -1,8 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { AuthContext } from '../../context/AuthContext';
+import api from '../../services/api';
 
 const AdminPortal = () => {
 	const navigate = useNavigate();
+	const { token } = useContext(AuthContext);
+	const [stats, setStats] = useState({
+		totalOrders: 0,
+		totalBookings: 0,
+		totalUsers: 0,
+		totalRevenue: 0
+	});
+	const [loading, setLoading] = useState(true);
+
+	useEffect(() => {
+		const fetchStats = async () => {
+			try {
+				const response = await api.get('/admin/stats/dashboard', {
+					headers: { Authorization: `Bearer ${token}` }
+				});
+				setStats(response.data);
+			} catch (error) {
+				console.error('Error fetching stats:', error);
+			} finally {
+				setLoading(false);
+			}
+		};
+
+		fetchStats();
+	}, [token]);
 
 	return (
 		<main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -60,28 +87,34 @@ const AdminPortal = () => {
 			{/* Stats Overview */}
 			<div className="glass rounded-2xl p-8">
 				<h3 className="text-2xl font-bold text-white mb-6">Quick Stats</h3>
-				<div className="grid md:grid-cols-4 gap-6">
-					<div className="bg-gray-800/50 rounded-xl p-6 border-2 border-gray-700">
-						<div className="text-3xl mb-2">📊</div>
-						<p className="text-gray-400 text-sm mb-2">Total Orders</p>
-						<p className="text-3xl font-bold text-light-blue">-</p>
+				{loading ? (
+					<div className="flex items-center justify-center py-12">
+						<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-yellow-500"></div>
 					</div>
-					<div className="bg-gray-800/50 rounded-xl p-6 border-2 border-gray-700">
-						<div className="text-3xl mb-2">🚗</div>
-						<p className="text-gray-400 text-sm mb-2">Total Rides</p>
-						<p className="text-3xl font-bold text-light-blue">-</p>
+				) : (
+					<div className="grid md:grid-cols-4 gap-6">
+						<div className="bg-gray-800/50 rounded-xl p-6 border-2 border-gray-700 hover:border-yellow-500/50 transition-all">
+							<div className="text-3xl mb-2">📊</div>
+							<p className="text-gray-400 text-sm mb-2">Total Orders</p>
+							<p className="text-3xl font-bold text-yellow-500">{stats.totalOrders}</p>
+						</div>
+						<div className="bg-gray-800/50 rounded-xl p-6 border-2 border-gray-700 hover:border-yellow-500/50 transition-all">
+							<div className="text-3xl mb-2">🚗</div>
+							<p className="text-gray-400 text-sm mb-2">Total Rides</p>
+							<p className="text-3xl font-bold text-yellow-500">{stats.totalBookings}</p>
+						</div>
+						<div className="bg-gray-800/50 rounded-xl p-6 border-2 border-gray-700 hover:border-yellow-500/50 transition-all">
+							<div className="text-3xl mb-2">👥</div>
+							<p className="text-gray-400 text-sm mb-2">Active Users</p>
+							<p className="text-3xl font-bold text-yellow-500">{stats.totalUsers}</p>
+						</div>
+						<div className="bg-gray-800/50 rounded-xl p-6 border-2 border-gray-700 hover:border-yellow-500/50 transition-all">
+							<div className="text-3xl mb-2">💰</div>
+							<p className="text-gray-400 text-sm mb-2">Revenue</p>
+							<p className="text-3xl font-bold text-yellow-500">₹{stats.totalRevenue.toFixed(2)}</p>
+						</div>
 					</div>
-					<div className="bg-gray-800/50 rounded-xl p-6 border-2 border-gray-700">
-						<div className="text-3xl mb-2">👥</div>
-						<p className="text-gray-400 text-sm mb-2">Active Users</p>
-						<p className="text-3xl font-bold text-light-blue">-</p>
-					</div>
-					<div className="bg-gray-800/50 rounded-xl p-6 border-2 border-gray-700">
-						<div className="text-3xl mb-2">💰</div>
-						<p className="text-gray-400 text-sm mb-2">Revenue</p>
-						<p className="text-3xl font-bold text-light-blue">-</p>
-					</div>
-				</div>
+				)}
 			</div>
 		</main>
 	);
