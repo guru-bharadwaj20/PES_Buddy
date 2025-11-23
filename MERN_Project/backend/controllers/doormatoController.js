@@ -2,14 +2,14 @@ import Canteen from "../models/Canteen.js";
 import MenuItem from "../models/MenuItem.js";
 import Order from "../models/Order.js";
 import { createNotification } from "./notificationController.js";
+import { handleError, validationError, notFoundError } from "../utils/errorHandler.js";
 
 export const getCanteens = async (req, res) => {
 	try {
 		const canteens = await Canteen.find().lean();
 		res.json(canteens);
 	} catch (err) {
-		console.error(err);
-		res.status(500).json({ message: "Server error" });
+		return handleError(res, err);
 	}
 };
 
@@ -19,8 +19,7 @@ export const getMenu = async (req, res) => {
 		const items = await MenuItem.find({ canteen: canteenId }).lean();
 		res.json(items);
 	} catch (err) {
-		console.error(err);
-		res.status(500).json({ message: "Server error" });
+		return handleError(res, err);
 	}
 };
 
@@ -28,7 +27,7 @@ export const createOrder = async (req, res) => {
 	try {
 		const user = req.user;
 		const { canteenName, items } = req.body; // items: [{ menuItem, qty }]
-		if (!items || !Array.isArray(items) || items.length === 0) return res.status(400).json({ message: "No items in order" });
+		if (!items || !Array.isArray(items) || items.length === 0) return validationError(res, "No items in order");
 
 		// Build order items and calculate total
 		const orderItems = [];
@@ -47,7 +46,7 @@ export const createOrder = async (req, res) => {
 			total += menuItem.price * qty;
 		}
 
-		if (orderItems.length === 0) return res.status(400).json({ message: "No valid items found" });
+		if (orderItems.length === 0) return validationError(res, "No valid items found");
 
 		const order = await Order.create({ 
 			user: user._id, 
@@ -83,8 +82,7 @@ export const createOrder = async (req, res) => {
 		
 		res.status(201).json(order);
 	} catch (err) {
-		console.error(err);
-		res.status(500).json({ message: "Server error" });
+		return handleError(res, err);
 	}
 };
 
@@ -94,8 +92,7 @@ export const getUserOrders = async (req, res) => {
 		const orders = await Order.find({ user: user._id }).sort({ createdAt: -1 }).lean();
 		res.json(orders);
 	} catch (err) {
-		console.error(err);
-		res.status(500).json({ message: "Server error" });
+		return handleError(res, err);
 	}
 };
 
@@ -105,7 +102,7 @@ export const updateOrderStatus = async (req, res) => {
 		const { status, rejectionReason } = req.body;
 		
 		if (!['accepted', 'rejected', 'preparing', 'completed', 'cancelled'].includes(status)) {
-			return res.status(400).json({ message: "Invalid status" });
+			return validationError(res, "Invalid status");
 		}
 		
 		const updateData = { status };
@@ -120,7 +117,7 @@ export const updateOrderStatus = async (req, res) => {
 		).populate('user', 'name srn');
 		
 		if (!order) {
-			return res.status(404).json({ message: "Order not found" });
+			return notFoundError(res, "Order not found");
 		}
 		
 		// Create notification for user
@@ -175,8 +172,7 @@ export const updateOrderStatus = async (req, res) => {
 		
 		res.json(order);
 	} catch (err) {
-		console.error(err);
-		res.status(500).json({ message: "Server error" });
+		return handleError(res, err);
 	}
 };
 

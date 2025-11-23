@@ -1,4 +1,5 @@
 import Notification from '../models/Notification.js';
+import { handleError, notFoundError } from '../utils/errorHandler.js';
 
 // Get user's notifications
 export const getUserNotifications = async (req, res) => {
@@ -13,8 +14,7 @@ export const getUserNotifications = async (req, res) => {
 			
 		res.json(notifications);
 	} catch (err) {
-		console.error(err);
-		res.status(500).json({ message: 'Server error' });
+		return handleError(res, err);
 	}
 };
 
@@ -29,8 +29,7 @@ export const getUnreadCount = async (req, res) => {
 		
 		res.json({ count });
 	} catch (err) {
-		console.error(err);
-		res.status(500).json({ message: 'Server error' });
+		return handleError(res, err);
 	}
 };
 
@@ -47,13 +46,12 @@ export const markAsRead = async (req, res) => {
 		);
 		
 		if (!notification) {
-			return res.status(404).json({ message: 'Notification not found' });
+			return notFoundError(res, 'Notification not found');
 		}
 		
 		res.json(notification);
 	} catch (err) {
-		console.error(err);
-		res.status(500).json({ message: 'Server error' });
+		return handleError(res, err);
 	}
 };
 
@@ -69,8 +67,7 @@ export const markAllAsRead = async (req, res) => {
 		
 		res.json({ message: 'All notifications marked as read' });
 	} catch (err) {
-		console.error(err);
-		res.status(500).json({ message: 'Server error' });
+		return handleError(res, err);
 	}
 };
 
@@ -86,13 +83,12 @@ export const deleteNotification = async (req, res) => {
 		});
 		
 		if (!notification) {
-			return res.status(404).json({ message: 'Notification not found' });
+			return notFoundError(res, 'Notification not found');
 		}
 		
 		res.json({ message: 'Notification deleted' });
 	} catch (err) {
-		console.error(err);
-		res.status(500).json({ message: 'Server error' });
+		return handleError(res, err);
 	}
 };
 

@@ -169,13 +169,11 @@ const Notifications = () => {
 									: 'border-transparent hover:border-gray-700/50'
 							}`}
 						>
-							<div className="flex items-start space-x-4">
-								{/* Icon */}
-								<div className={`flex-shrink-0 w-12 h-12 rounded-full ${getTypeColor(notification.type)} border-2 flex items-center justify-center text-2xl`}>
-									{notification.icon}
-								</div>
-
-								{/* Content */}
+						<div className="flex items-start space-x-4">
+							{/* Icon */}
+							<div className={`shrink-0 w-12 h-12 rounded-full ${getTypeColor(notification.type)} border-2 flex items-center justify-center text-2xl`}>
+								{notification.icon}
+							</div>								{/* Content */}
 								<div className="flex-1 min-w-0">
 									<div className="flex items-start justify-between gap-4 mb-2">
 										<h3 className="text-lg font-bold text-white">
