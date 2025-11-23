@@ -95,8 +95,13 @@ export const AuthProvider = ({ children }) => {
 		setSocketConnected(false);
 	};
 
+	const updateUserProfile = (updatedUser) => {
+		setUser(updatedUser);
+		localStorage.setItem('pes_user', JSON.stringify(updatedUser));
+	};
+
 	return (
-		<AuthContext.Provider value={{ user, token, login, loginAdmin, logout, register, registerAdmin, socketConnected }}>
+		<AuthContext.Provider value={{ user, token, login, loginAdmin, logout, register, registerAdmin, socketConnected, updateUserProfile }}>
 			{children}
 		</AuthContext.Provider>
 	);
