@@ -162,3 +162,33 @@ export const validateNotification = [
   
   handleValidationErrors
 ];
+
+// Validation rules for profile update
+export const validateProfileUpdate = [
+  body('name')
+    .optional({ checkFalsy: true })
+    .trim()
+    .isLength({ min: 2, max: 50 }).withMessage('Name must be between 2 and 50 characters')
+    .matches(/^[a-zA-Z\s]+$/).withMessage('Name should only contain letters and spaces'),
+  
+  body('email')
+    .optional({ checkFalsy: true })
+    .trim()
+    .isEmail().withMessage('Invalid email address')
+    .normalizeEmail(),
+  
+  handleValidationErrors
+];
+
+// Validation rules for password reset
+export const validatePasswordReset = [
+  body('currentPassword')
+    .notEmpty().withMessage('Current password is required'),
+  
+  body('newPassword')
+    .notEmpty().withMessage('New password is required')
+    .isLength({ min: 6 }).withMessage('New password must be at least 6 characters long')
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/).withMessage('Password must contain at least one uppercase letter, one lowercase letter, and one number'),
+  
+  handleValidationErrors
+];

@@ -69,3 +69,82 @@ export const forgotPassword = async (req, res) => {
 	}
 };
 
+export const updateProfile = async (req, res) => {
+	try {
+		const { name, email } = req.body;
+		const userId = req.user.id;
+
+		const user = await User.findById(userId);
+		if (!user) return res.status(404).json({ message: "User not found" });
+
+		// Update fields
+		if (name) user.name = name;
+		if (email) user.email = email;
+
+		await user.save();
+
+		res.json({ 
+			message: "Profile updated successfully",
+			user: { 
+				id: user._id, 
+				name: user.name, 
+				srn: user.srn, 
+				email: user.email, 
+				role: user.role 
+			}
+		});
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({ message: "Server error" });
+	}
+};
+
+export const resetPassword = async (req, res) => {
+	try {
+		const { currentPassword, newPassword } = req.body;
+		const userId = req.user.id;
+
+		if (!currentPassword || !newPassword) {
+			return res.status(400).json({ message: "Current password and new password are required" });
+		}
+
+		const user = await User.findById(userId);
+		if (!user) return res.status(404).json({ message: "User not found" });
+
+		// Verify current password
+		const isMatch = await user.comparePassword(currentPassword);
+		if (!isMatch) {
+			return res.status(401).json({ message: "Current password is incorrect" });
+		}
+
+		// Update password
+		user.password = newPassword;
+		await user.save();
+
+		res.json({ message: "Password reset successfully" });
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({ message: "Server error" });
+	}
+};
+
+export const deleteAccount = async (req, res) => {
+	try {
+		const userId = req.user.id;
+
+		const user = await User.findById(userId);
+		if (!user) return res.status(404).json({ message: "User not found" });
+
+		// Delete user account
+		await User.findByIdAndDelete(userId);
+
+		// TODO: Also delete related data (orders, bookings, expenses, etc.)
+		// You might want to add cascade deletion for related collections
+
+		res.json({ message: "Account deleted successfully" });
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({ message: "Server error" });
+	}
+};
+

@@ -15,4 +15,19 @@ const forgotPassword = async (payload) => {
 	return res.data;
 };
 
-export default { register, login, forgotPassword };
+const updateProfile = async (payload) => {
+	const res = await API.put('/auth/profile', payload);
+	return res.data;
+};
+
+const resetPassword = async (payload) => {
+	const res = await API.put('/auth/reset-password', payload);
+	return res.data;
+};
+
+const deleteAccount = async () => {
+	const res = await API.delete('/auth/account');
+	return res.data;
+};
+
+export default { register, login, forgotPassword, updateProfile, resetPassword, deleteAccount };

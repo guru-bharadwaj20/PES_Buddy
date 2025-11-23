@@ -1,10 +1,10 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import authService from '../services/authService';
 
 const Profile = () => {
-	const { user, logout } = useContext(AuthContext);
+	const { user, logout, updateUserProfile } = useContext(AuthContext);
 	const navigate = useNavigate();
 	const [activeTab, setActiveTab] = useState('profile');
 	const [editing, setEditing] = useState(false);
@@ -13,6 +13,17 @@ const Profile = () => {
 		email: user?.email || '',
 		srn: user?.srn || ''
 	});
+
+	// Sync formData with user data whenever user changes or when entering edit mode
+	useEffect(() => {
+		if (user) {
+			setFormData({
+				name: user.name || '',
+				email: user.email || '',
+				srn: user.srn || ''
+			});
+		}
+	}, [user, editing]);
 	const [passwordData, setPasswordData] = useState({
 		currentPassword: '',
 		newPassword: '',
@@ -27,12 +38,16 @@ const Profile = () => {
 		setLoading(true);
 		setMessage({ type: '', text: '' });
 		try {
-			// API call to update profile
-			await new Promise(resolve => setTimeout(resolve, 1000)); // Simulated API call
+			const response = await authService.updateProfile({
+				name: formData.name,
+				email: formData.email
+			});
+			updateUserProfile(response.user);
 			setMessage({ type: 'success', text: 'Profile updated successfully!' });
 			setEditing(false);
 		} catch (err) {
-			setMessage({ type: 'error', text: 'Failed to update profile' });
+			const errorMsg = err.response?.data?.message || 'Failed to update profile';
+			setMessage({ type: 'error', text: errorMsg });
 		} finally {
 			setLoading(false);
 		}
@@ -47,12 +62,15 @@ const Profile = () => {
 		setLoading(true);
 		setMessage({ type: '', text: '' });
 		try {
-			// API call to reset password
-			await new Promise(resolve => setTimeout(resolve, 1000)); // Simulated API call
+			await authService.resetPassword({
+				currentPassword: passwordData.currentPassword,
+				newPassword: passwordData.newPassword
+			});
 			setMessage({ type: 'success', text: 'Password reset successfully!' });
 			setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
 		} catch (err) {
-			setMessage({ type: 'error', text: 'Failed to reset password' });
+			const errorMsg = err.response?.data?.message || 'Failed to reset password';
+			setMessage({ type: 'error', text: errorMsg });
 		} finally {
 			setLoading(false);
 		}
@@ -60,16 +78,17 @@ const Profile = () => {
 
 	const handleDeleteAccount = async () => {
 		setLoading(true);
+		setMessage({ type: '', text: '' });
 		try {
-			// API call to delete account
-			await new Promise(resolve => setTimeout(resolve, 1000)); // Simulated API call
+			await authService.deleteAccount();
 			logout();
 			navigate('/');
 		} catch (err) {
-			setMessage({ type: 'error', text: 'Failed to delete account' });
+			const errorMsg = err.response?.data?.message || 'Failed to delete account';
+			setMessage({ type: 'error', text: errorMsg });
+			setShowDeleteConfirm(false);
 		} finally {
 			setLoading(false);
-			setShowDeleteConfirm(false);
 		}
 	};
 
@@ -154,9 +173,9 @@ const Profile = () => {
 								<input
 									type="text"
 									value={formData.name}
+									placeholder={user?.name}
 									onChange={(e) => setFormData({ ...formData, name: e.target.value })}
 									className="w-full px-4 py-3 bg-gray-800/50 border-2 border-gray-700 text-white rounded-xl focus:border-light-blue focus:ring-4 focus:ring-light-blue/20 transition-all outline-none"
-									required
 								/>
 							</div>
 							<div>
@@ -164,9 +183,9 @@ const Profile = () => {
 								<input
 									type="email"
 									value={formData.email}
+									placeholder={user?.email || 'Enter your email'}
 									onChange={(e) => setFormData({ ...formData, email: e.target.value })}
 									className="w-full px-4 py-3 bg-gray-800/50 border-2 border-gray-700 text-white rounded-xl focus:border-light-blue focus:ring-4 focus:ring-light-blue/20 transition-all outline-none"
-									required
 								/>
 							</div>
 							<div>
@@ -174,6 +193,7 @@ const Profile = () => {
 								<input
 									type="text"
 									value={formData.srn}
+									placeholder={user?.srn}
 									className="w-full px-4 py-3 bg-gray-800/50 border-2 border-gray-700 text-gray-500 rounded-xl cursor-not-allowed"
 									disabled
 								/>
