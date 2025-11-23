@@ -3,7 +3,7 @@
 Campus utilities in one MERN app: **Doormato** (food), **Scootigo** (rides), **Expense Tracker** (weekly budget), **Admin Portal** (monitor orders & bookings). Originated from legacy C code → modern real‑time platform.
 
 📘 Short History
-- Started as C menus in `C_Program/` → reimagined with React + Express + MongoDB.
+- Started as C menus (now in `legacy/C_Program/`) → reimagined with React + Express + MongoDB.
 
 🗂️ Project Layout (Simplified)
 Active code under `MERN_Project/`:
@@ -11,24 +11,28 @@ Active code under `MERN_Project/`:
 ```
 MERN_Project/
 	backend/
-		controllers/ (auth, doormato, scootigo, expense)
-		models/ (User, Canteen, MenuItem, Order, Booking, Scooter, Expense)
-		routes/ (auth, doormato, scootigo, expense, admin)
-		middleware/ (auth JWT protect)
-		server.js (Express + Socket.IO)
+		controllers/ (auth, doormato, scootigo, expense, notification)
+		models/ (User, Canteen, MenuItem, Order, Booking, Scooter, Expense, Notification)
+		routes/ (auth, doormato, scootigo, expense, admin, notification)
+		middleware/ (authMiddleware, validateInput)
+		utils/ (errorHandler, seedData)
+		config/ (db)
+		server.js (Express + Socket.IO + JWT)
 	frontend/
 		src/
-			pages/Doormato/*
-			pages/Scootigo/Scootigo.jsx
-			pages/ExpenseTracker.jsx (mounted at /expense-tracker)
-			pages/Admin/{AdminPortal,DoormatoPortal,ScootigoPortal}.jsx
-			context/{AuthContext,CartContext}.jsx
-			services/{api,authService,doormatoService,scootigoService,expenseService}.js
-			components/{Header,Footer,ProtectedRoute}.jsx
+			pages/
+				Doormato/ (CanteenList, Menu, Cart, MyOrders)
+				Scootigo/ (Scootigo, BookingDetails)
+				Admin/ (AdminPortal, DoormatoPortal, ScootigoPortal)
+				Auth/ (Login, Register)
+				ExpenseTracker.jsx, Notifications.jsx, Profile.jsx
+			context/ (AuthContext, CartContext)
+			services/ (api, authService, doormatoService, scootigoService, expenseService, socketService)
+			components/ (Header, Footer, ProtectedRoute, AdminProtectedRoute)
 	seeder.js (populates canteens, menu items, scooters, demo user)
+legacy/
+	C_Program/ (Original C implementation for reference)
 ```
-
-Legacy C sources in `C_Program/` kept for reference.
 
 <p align="center">
 	<img src="https://github.com/guru-bharadwaj20/PES_Buddy/blob/main/Preview.png" alt="PES Buddy preview" style="max-width:100%;border-radius:8px;box-shadow:0 8px 24px rgba(11,61,145,0.12)" />
@@ -38,9 +42,9 @@ Legacy C sources in `C_Program/` kept for reference.
 Auth • Canteens & Menus • Cart & Orders • Scooter Booking & Availability • Weekly Expense Tracking • Admin Dashboards • WebSockets • Dark Responsive UI
 
 ⚙️ Stack
-Backend: Node.js, Express, MongoDB, Mongoose, Socket.IO, JWT  
-Frontend: React 18, Vite, Tailwind, Router, Axios  
-Dev: Nodemon, Concurrent scripts, Seeder
+**Backend:** Node.js, Express, MongoDB, Mongoose, Socket.IO, JWT  
+**Frontend:** React 18, Vite, Tailwind CSS, React Router, Axios, Context API  
+**Dev Tools:** Nodemon, Concurrently, Seeder utility, Centralized error handling
 
 🛠️ Quickstart
 ```powershell
