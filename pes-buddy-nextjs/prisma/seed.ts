@@ -13,6 +13,7 @@ async function main() {
     update: {},
     create: {
       name: "PES Buddy Admin",
+      srn: "ADMIN000000001",
       email: "admin@pesbuddy.com",
       password: adminHash,
       role: "ADMIN",
