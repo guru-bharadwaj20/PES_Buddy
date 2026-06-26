@@ -8,7 +8,7 @@ export const bookScooterSchema = z.object({
 });
 
 export const updateBookingStatusSchema = z.object({
-  status: z.enum(["ACTIVE", "ONGOING", "COMPLETED", "CANCELLED"]),
+  status: z.enum(["ACTIVE", "COMPLETED", "CANCELLED"]),
 });
 
 export const scooterSchema = z.object({

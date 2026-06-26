@@ -92,7 +92,7 @@ export interface Scooter {
   updatedAt: Date;
 }
 
-export type BookingStatus = "PENDING" | "ACTIVE" | "ONGOING" | "COMPLETED" | "CANCELLED";
+export type BookingStatus = "PENDING" | "ACTIVE" | "COMPLETED" | "CANCELLED";
 
 export interface Booking {
   id: string;
@@ -127,7 +127,7 @@ export interface Expense {
   userId: string;
   category: string;
   amount: number;
-  note?: string | null;
+  description: string;
   date: Date;
   createdAt: Date;
   updatedAt: Date;

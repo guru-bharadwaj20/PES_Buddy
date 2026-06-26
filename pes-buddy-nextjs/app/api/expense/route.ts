@@ -20,14 +20,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { category, amount, note, date } = parsed.data;
+    const { description, category, amount, date } = parsed.data;
 
     const expense = await db.expense.create({
       data: {
         userId: session.user.id,
         category,
         amount,
-        note,
+        note: description,
         date: date ? new Date(date) : new Date(),
       },
     });
@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    return NextResponse.json(expense, { status: 201 });
+    return NextResponse.json({ ...expense, description: expense.note }, { status: 201 });
   } catch (err) {
     console.error("[Expense/Add]", err);
     return NextResponse.json({ message: "Internal server error" }, { status: 500 });
@@ -74,7 +74,8 @@ export async function GET() {
       orderBy: { date: "desc" },
     });
 
-    return NextResponse.json(expenses);
+    const mapped = expenses.map((e) => ({ ...e, description: e.note ?? "" }));
+    return NextResponse.json(mapped);
   } catch (err) {
     console.error("[Expense/Get]", err);
     return NextResponse.json({ message: "Internal server error" }, { status: 500 });
@@ -88,7 +89,8 @@ export async function DELETE(req: NextRequest) {
   }
 
   try {
-    const { id } = await req.json();
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get("id");
     if (!id) return NextResponse.json({ message: "Expense ID required" }, { status: 400 });
 
     await db.expense.deleteMany({
