@@ -39,7 +39,7 @@ export default function AdminDoormato() {
       toast(`New order from ${order.userName ?? "a student"}!`, { icon: "🍕" });
     };
     socket.on("order:new", handleNew);
-    return () => socket.off("order:new", handleNew);
+    return () => { socket.off("order:new", handleNew); };
   }, [socket]);
 
   const updateStatus = async (orderId: string, status: string, rejectionReason?: string) => {

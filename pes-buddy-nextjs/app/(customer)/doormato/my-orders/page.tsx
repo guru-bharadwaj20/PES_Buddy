@@ -41,7 +41,7 @@ export default function MyOrdersPage() {
     };
 
     socket.on("order:status", handleStatus);
-    return () => socket.off("order:status", handleStatus);
+    return () => { socket.off("order:status", handleStatus); };
   }, [socket]);
 
   return (

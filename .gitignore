@@ -1,11 +1,12 @@
-# Dependencies (ignores all node_modules folders everywhere)
+# Dependencies
 node_modules/
 
-# Secrets (ignores all .env files everywhere)
+# Secrets
 **/.env
 
-# Build outputs (ignores all dist folders everywhere)
+# Build outputs
 dist/
+.next/
 
 # Logs
 npm-debug.log*
@@ -15,6 +16,6 @@ yarn-error.log*
 # OS files
 .DS_Store
 
-# Old folder structure (deprecated)
-MERN_Project/server/
-MERN_Project/client/
+# Prisma
+prisma/dev.db
+prisma/dev.db-journal
