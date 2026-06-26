@@ -6,7 +6,6 @@ import { motion } from "framer-motion";
 import { useSocket } from "@/components/providers/SocketProvider";
 import { useEffect, useState } from "react";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
-import { formatCurrency } from "@/lib/utils";
 
 interface ActivityItem {
   type: string;
@@ -19,7 +18,6 @@ export default function DashboardPage() {
   const { data: session } = useSession();
   const { connected, connectedUsers, socket } = useSocket();
   const [recentActivity, setRecentActivity] = useState<ActivityItem[]>([]);
-  const [stats, setStats] = useState({ orders: 0, bookings: 0, expenses: 0 });
 
   useEffect(() => {
     if (!socket) return;

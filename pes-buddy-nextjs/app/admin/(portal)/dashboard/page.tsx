@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import { db } from "@/lib/db";
 import { cache } from "@/lib/redis";
 import { formatCurrency } from "@/lib/utils";
@@ -82,7 +81,7 @@ export default async function AdminDashboardPage() {
 
       {/* Stats grid */}
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
-        {statCards.map((card, i) => (
+        {statCards.map((card) => (
           <div key={card.label} className="glass rounded-2xl p-6">
             <div className="flex items-center gap-3 mb-3">
               <span className="text-3xl">{card.icon}</span>
