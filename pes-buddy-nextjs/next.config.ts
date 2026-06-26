@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Prevent the bundler from inlining Prisma's native query engine or bcryptjs
+  // bindings — they must remain as external Node.js requires in serverless functions.
+  serverExternalPackages: ["@prisma/client", "bcryptjs"],
   images: {
     remotePatterns: [
       {

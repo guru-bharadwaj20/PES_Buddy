@@ -1,8 +1,12 @@
-import { auth } from "@/lib/auth";
+// Edge Runtime — only imports edge-safe modules.
+// lib/auth.config does NOT import Prisma or any Node.js-only package.
+import NextAuth from "next-auth";
+import { authConfig } from "@/lib/auth.config";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-// Routes that require authentication
+const { auth } = NextAuth(authConfig);
+
 const CUSTOMER_PROTECTED = [
   "/dashboard",
   "/doormato",
@@ -12,7 +16,6 @@ const CUSTOMER_PROTECTED = [
   "/profile",
 ];
 
-// Routes that require admin role
 const ADMIN_PROTECTED = [
   "/admin/dashboard",
   "/admin/doormato",
@@ -20,7 +23,6 @@ const ADMIN_PROTECTED = [
   "/admin/profile",
 ];
 
-// Routes that redirect when already logged in
 const AUTH_ROUTES = [
   "/auth/login",
   "/auth/register",
@@ -33,19 +35,13 @@ export default auth((req: NextRequest & { auth?: { user?: { role?: string } } | 
   const session = req.auth;
   const user = session?.user;
 
-  // If authenticated customer visits auth pages → redirect to dashboard
-  if (
-    AUTH_ROUTES.some((r) => pathname.startsWith(r)) &&
-    user?.role === "CUSTOMER"
-  ) {
+  // Authenticated customer visits auth pages → dashboard
+  if (AUTH_ROUTES.some((r) => pathname.startsWith(r)) && user?.role === "CUSTOMER") {
     return NextResponse.redirect(new URL("/dashboard", req.url));
   }
 
-  // If authenticated admin visits auth pages → redirect to admin dashboard
-  if (
-    AUTH_ROUTES.some((r) => pathname.startsWith(r)) &&
-    user?.role === "ADMIN"
-  ) {
+  // Authenticated admin visits auth pages → admin dashboard
+  if (AUTH_ROUTES.some((r) => pathname.startsWith(r)) && user?.role === "ADMIN") {
     return NextResponse.redirect(new URL("/admin/dashboard", req.url));
   }
 

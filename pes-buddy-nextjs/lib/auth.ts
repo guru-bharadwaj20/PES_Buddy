@@ -1,33 +1,17 @@
-import NextAuth, { type DefaultSession } from "next-auth";
+// Node.js only — never imported from middleware or Edge Runtime code.
+// All Prisma and bcrypt usage lives here.
+import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
-
-// Extend session types
-declare module "next-auth" {
-  interface Session {
-    user: {
-      id: string;
-      srn: string;
-      role: string;
-    } & DefaultSession["user"];
-  }
-  interface User {
-    srn?: string;
-    role?: string;
-  }
-}
+import { authConfig } from "@/lib/auth.config";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  ...authConfig,
   adapter: PrismaAdapter(db),
-  session: { strategy: "jwt" },
-  secret: process.env.NEXTAUTH_SECRET,
-  pages: {
-    signIn: "/auth/login",
-    error: "/auth/login",
-  },
+  // Override the stub providers from authConfig with real implementations.
   providers: [
     CredentialsProvider({
       id: "credentials",
@@ -49,7 +33,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const user = await db.user.findUnique({ where: { srn } });
         if (!user || !user.password) return null;
 
-        // Role-based login separation
         if (isAdmin === "true" && user.role !== "ADMIN") return null;
         if (isAdmin !== "true" && user.role === "ADMIN") return null;
 
@@ -74,27 +57,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         ]
       : []),
   ],
-  callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
-        token.srn = user.srn;
-        token.role = user.role;
-      }
-      return token;
-    },
-    async session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.id as string;
-        session.user.srn = token.srn as string;
-        session.user.role = token.role as string;
-      }
-      return session;
-    },
-  },
   events: {
     async createUser({ user }) {
-      // Set default role for Google OAuth users
       if (user.id) {
         await db.user.update({
           where: { id: user.id },
@@ -105,13 +69,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   },
 });
 
-// Server-side helper to get current user
 export async function getCurrentUser() {
   const session = await auth();
   return session?.user ?? null;
 }
 
-// Check if user is admin
 export async function requireAdmin() {
   const user = await getCurrentUser();
   if (!user || user.role !== "ADMIN") {
