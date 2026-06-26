@@ -62,7 +62,7 @@ export function useNotifications() {
   }, [socket, fetchNotifications]);
 
   const markAsRead = useCallback(async (id: string) => {
-    await fetch(`/api/notifications/${id}/read`, { method: "PATCH" });
+    await fetch(`/api/notifications/${id}`, { method: "PATCH" });
     setNotifications((prev) =>
       prev.map((n) => (n.id === id ? { ...n, read: true } : n))
     );

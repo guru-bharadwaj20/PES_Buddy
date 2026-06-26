@@ -8,7 +8,7 @@ import { StatusBadge } from "@/components/ui/StatusBadge";
 import { formatDateTime, formatCurrency } from "@/lib/utils";
 import type { Order } from "@/types";
 
-type FilterStatus = "ALL" | "PENDING" | "ACCEPTED" | "REJECTED" | "DELIVERED";
+type FilterStatus = "ALL" | "PENDING" | "ACCEPTED" | "REJECTED" | "COMPLETED";
 
 export default function AdminDoormato() {
   const { socket } = useSocket();
@@ -78,7 +78,7 @@ export default function AdminDoormato() {
 
       {/* Filter tabs */}
       <div className="flex gap-2 flex-wrap mb-6">
-        {(["ALL", "PENDING", "ACCEPTED", "REJECTED", "DELIVERED"] as FilterStatus[]).map((s) => (
+        {(["ALL", "PENDING", "ACCEPTED", "REJECTED", "COMPLETED"] as FilterStatus[]).map((s) => (
           <button
             key={s}
             onClick={() => setFilter(s)}
@@ -167,11 +167,11 @@ export default function AdminDoormato() {
 
                   {order.status === "ACCEPTED" && (
                     <button
-                      onClick={() => updateStatus(order.id, "DELIVERED")}
+                      onClick={() => updateStatus(order.id, "COMPLETED")}
                       disabled={updating === order.id}
                       className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-xl text-sm transition-all disabled:opacity-50"
                     >
-                      📦 Mark Delivered
+                      📦 Mark Completed
                     </button>
                   )}
                 </div>

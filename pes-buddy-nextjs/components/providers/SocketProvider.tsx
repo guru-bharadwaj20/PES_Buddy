@@ -36,40 +36,53 @@ export function SocketProvider({ children }: { children: ReactNode }) {
     const WS_URL =
       process.env.NEXT_PUBLIC_SOCKET_URL ?? "http://localhost:3000";
 
-    const socket = io(WS_URL, {
-      path: "/api/socket",
-      auth: { token: (session as { accessToken?: string }).accessToken ?? "" },
-      transports: ["websocket", "polling"],
-      reconnection: true,
-      reconnectionDelay: 1000,
-      reconnectionAttempts: 5,
-    });
+    let cancelled = false;
 
-    socketRef.current = socket;
+    fetch("/api/auth/socket-token")
+      .then((r) => r.json())
+      .then(({ token }: { token?: string }) => {
+        if (cancelled || !token) return;
 
-    socket.on("connect", () => {
-      setConnected(true);
-      console.log("[Socket] Connected:", socket.id);
-    });
+        const socket = io(WS_URL, {
+          path: "/api/socket",
+          auth: { token },
+          transports: ["websocket", "polling"],
+          reconnection: true,
+          reconnectionDelay: 1000,
+          reconnectionAttempts: 5,
+        });
 
-    socket.on("disconnect", () => {
-      setConnected(false);
-      console.log("[Socket] Disconnected");
-    });
+        socketRef.current = socket;
 
-    socket.on("users:count", (count: number) => {
-      setConnectedUsers(count);
-    });
+        socket.on("connect", () => {
+          setConnected(true);
+        });
 
-    socket.on("notification:receive", (data: { title: string; message: string; icon?: string }) => {
-      toast(`${data.icon ?? "🔔"} ${data.title}: ${data.message}`, {
-        duration: 5000,
+        socket.on("disconnect", () => {
+          setConnected(false);
+        });
+
+        socket.on("users:count", (count: number) => {
+          setConnectedUsers(count);
+        });
+
+        socket.on("notification:receive", (data: { title: string; message: string; icon?: string }) => {
+          toast(`${data.icon ?? "🔔"} ${data.title}: ${data.message}`, {
+            duration: 5000,
+          });
+        });
+      })
+      .catch(() => {
+        // Socket.IO unavailable (e.g., Vercel serverless) — silently skip
       });
-    });
 
     return () => {
-      socket.disconnect();
-      socketRef.current = null;
+      cancelled = true;
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
+      setConnected(false);
     };
   }, [session]);
 

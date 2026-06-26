@@ -7,7 +7,7 @@ import { StatusBadge } from "@/components/ui/StatusBadge";
 import { formatDateTime, formatCurrency } from "@/lib/utils";
 import type { Booking } from "@/types";
 
-type FilterStatus = "ALL" | "ACTIVE" | "COMPLETED" | "CANCELLED";
+type FilterStatus = "ALL" | "PENDING" | "ACTIVE" | "COMPLETED" | "CANCELLED";
 
 export default function AdminScootigo() {
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -47,6 +47,7 @@ export default function AdminScootigo() {
   };
 
   const filtered = filter === "ALL" ? bookings : bookings.filter((b) => b.status === filter);
+  const pendingCount = bookings.filter((b) => b.status === "PENDING").length;
   const activeCount = bookings.filter((b) => b.status === "ACTIVE").length;
 
   return (
@@ -54,6 +55,9 @@ export default function AdminScootigo() {
       <div className="mb-8">
         <h1 className="text-4xl font-bold text-white flex items-center gap-3">
           🛵 Scootigo Bookings
+          {pendingCount > 0 && (
+            <span className="bg-yellow-500 text-white text-sm px-2.5 py-0.5 rounded-full">{pendingCount} pending</span>
+          )}
           {activeCount > 0 && (
             <span className="bg-green-500 text-white text-sm px-2.5 py-0.5 rounded-full">{activeCount} active</span>
           )}
@@ -62,8 +66,8 @@ export default function AdminScootigo() {
       </div>
 
       {/* Stats row */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-        {(["ALL", "ACTIVE", "COMPLETED", "CANCELLED"] as FilterStatus[]).map((status) => {
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 mb-8">
+        {(["ALL", "PENDING", "ACTIVE", "COMPLETED", "CANCELLED"] as FilterStatus[]).map((status) => {
           const count = status === "ALL" ? bookings.length : bookings.filter((b) => b.status === status).length;
           return (
             <button
@@ -128,6 +132,25 @@ export default function AdminScootigo() {
                   <p className="text-white font-bold text-2xl">{formatCurrency(booking.totalFare)}</p>
                   {booking.distance && (
                     <p className="text-gray-400 text-sm">{booking.distance} km</p>
+                  )}
+
+                  {booking.status === "PENDING" && (
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => updateStatus(booking.id, "ACTIVE")}
+                        disabled={updating === booking.id}
+                        className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-xl text-sm transition-all disabled:opacity-50"
+                      >
+                        🛵 Start Ride
+                      </button>
+                      <button
+                        onClick={() => updateStatus(booking.id, "CANCELLED")}
+                        disabled={updating === booking.id}
+                        className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 font-bold rounded-xl text-sm border border-red-500/50 transition-all disabled:opacity-50"
+                      >
+                        ✗ Cancel
+                      </button>
+                    </div>
                   )}
 
                   {booking.status === "ACTIVE" && (
