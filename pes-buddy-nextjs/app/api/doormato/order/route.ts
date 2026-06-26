@@ -22,7 +22,13 @@ export async function POST(req: NextRequest) {
 
     const { canteenName, items } = parsed.data;
 
-    // Build order items and compute total
+    // Fetch all menu items in a single query
+    const menuItemIds = items.map((i) => i.menuItem);
+    const menuItems = await db.menuItem.findMany({
+      where: { id: { in: menuItemIds } },
+    });
+    const menuItemMap = new Map(menuItems.map((m) => [m.id, m]));
+
     const orderItems: Array<{
       menuItemId: string;
       canteenId: string;
@@ -34,10 +40,7 @@ export async function POST(req: NextRequest) {
     let total = 0;
 
     for (const item of items) {
-      const menuItem = await db.menuItem.findUnique({
-        where: { id: item.menuItem },
-        include: { canteen: true },
-      });
+      const menuItem = menuItemMap.get(item.menuItem);
       if (!menuItem) continue;
 
       const qty = item.qty > 0 ? item.qty : 1;
