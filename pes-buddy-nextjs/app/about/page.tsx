@@ -53,7 +53,7 @@ export default function AboutPage() {
         <AnimatedSection delay={0.3}>
           <h2 className="text-3xl font-bold text-white text-center mb-10">Our Modules</h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-            {team.map((module, i) => (
+            {team.map((module) => (
               <div key={module.name} className="glass rounded-xl p-6 text-center card-hover">
                 <div className="text-4xl mb-3">{module.icon}</div>
                 <h3 className="text-lg font-bold text-white mb-1">{module.name}</h3>
@@ -69,8 +69,8 @@ export default function AboutPage() {
             <div className="grid sm:grid-cols-3 gap-6">
               {[
                 { label: "Frontend", items: ["Next.js 15", "React 19", "TypeScript", "Tailwind CSS", "Framer Motion"] },
-                { label: "Backend", items: ["Next.js Route Handlers", "Prisma ORM", "PostgreSQL", "Redis", "Socket.IO"] },
-                { label: "Auth & Deploy", items: ["Auth.js (NextAuth v5)", "HttpOnly Cookies", "Docker", "GitHub Actions", "PWA Ready"] },
+                { label: "Backend", items: ["Next.js Route Handlers", "Prisma ORM", "MongoDB Atlas", "Socket.IO", "Redis (optional)"] },
+                { label: "Auth & Deploy", items: ["Auth.js (NextAuth v5)", "HttpOnly Cookies", "Vercel", "GitHub Actions", "PWA Ready"] },
               ].map((stack) => (
                 <div key={stack.label}>
                   <h3 className="text-blue-400 font-bold mb-3">{stack.label}</h3>
