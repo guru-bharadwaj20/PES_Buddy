@@ -1,4 +1,12 @@
 # PES Buddy
+<p align="center">
+  <a href="PES_Buddy%20Demo.mp4">
+    <img src="docs/PES_Buddy%20Demo%20thumbnail.png" alt="Watch the PES_Buddy demo video" width="720">
+  </a>
+  <br>
+  <sub>▶ <b><a href="PES_Buddy%20Demo.mp4">Watch the PES_Buddy demo</a></b> (2 min): a fresh clone running live, with a student and an admin in two browsers updating each other over Socket.IO</sub>
+</p>
+
 
 **A campus utilities platform — order from canteens, rent a scooter, track your spending, and get live updates, all behind one student login.**
 
